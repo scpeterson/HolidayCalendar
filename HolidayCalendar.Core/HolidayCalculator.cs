@@ -3,10 +3,33 @@
 namespace HolidayCalendar.Core;
 
 /// <summary>
-/// Provides reusable date rules and holiday calculations for United States' federal holidays and supported religious holidays.
+/// Provides reusable date rules and holiday calculations for United States' federal holidays and supported Christian religious holidays.
 /// </summary>
 public static class HolidayCalculator
 {
+    private static readonly IReadOnlyDictionary<string, string> FederalHolidayAliases =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["New Years Day"] = HolidayNames.NewYearsDay,
+            ["MLK Day"] = HolidayNames.MartinLutherKingJrDay,
+            ["Washington's Birthday"] = HolidayNames.PresidentsDay,
+            ["Fourth of July"] = HolidayNames.IndependenceDay,
+            ["Xmas"] = HolidayNames.ChristmasDay,
+            ["Christmas"] = HolidayNames.ChristmasDay
+        };
+
+    private static readonly IReadOnlyDictionary<string, string> ReligiousHolidayAliases =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Easter"] = HolidayNames.EasterSunday,
+            ["Holy Thursday"] = HolidayNames.MaundyThursday,
+            ["Ascension Thursday"] = HolidayNames.AscensionDay,
+            ["Pentecost"] = HolidayNames.PentecostSunday,
+            ["All Hallows' Day"] = HolidayNames.AllSaintsDay,
+            ["Christmas"] = HolidayNames.ChristmasDay,
+            ["Xmas Eve"] = HolidayNames.ChristmasEve
+        };
+
     private static readonly IReadOnlyDictionary<string, Func<int, Holiday>> FederalHolidayFactories =
         new Dictionary<string, Func<int, Holiday>>(StringComparer.OrdinalIgnoreCase)
         {
@@ -70,10 +93,20 @@ public static class HolidayCalculator
     private static readonly IReadOnlyDictionary<string, Func<int, Holiday>> ReligiousHolidayFactories =
         new Dictionary<string, Func<int, Holiday>>(StringComparer.OrdinalIgnoreCase)
         {
+            [HolidayNames.Epiphany] = year => new Holiday(
+                HolidayNames.Epiphany,
+                CalculateEpiphany(year),
+                CalculateEpiphany(year),
+                HolidayCategory.Religious),
             [HolidayNames.AshWednesday] = year => new Holiday(
                 HolidayNames.AshWednesday,
                 CalculateAshWednesday(year),
                 CalculateAshWednesday(year),
+                HolidayCategory.Religious),
+            [HolidayNames.Annunciation] = year => new Holiday(
+                HolidayNames.Annunciation,
+                CalculateAnnunciation(year),
+                CalculateAnnunciation(year),
                 HolidayCategory.Religious),
             [HolidayNames.PalmSunday] = year => new Holiday(
                 HolidayNames.PalmSunday,
@@ -119,6 +152,26 @@ public static class HolidayCalculator
                 HolidayNames.PentecostMonday,
                 CalculatePentecostMonday(year),
                 CalculatePentecostMonday(year),
+                HolidayCategory.Religious),
+            [HolidayNames.AllSaintsDay] = year => new Holiday(
+                HolidayNames.AllSaintsDay,
+                CalculateAllSaintsDay(year),
+                CalculateAllSaintsDay(year),
+                HolidayCategory.Religious),
+            [HolidayNames.AllSoulsDay] = year => new Holiday(
+                HolidayNames.AllSoulsDay,
+                CalculateAllSoulsDay(year),
+                CalculateAllSoulsDay(year),
+                HolidayCategory.Religious),
+            [HolidayNames.ChristmasEve] = year => new Holiday(
+                HolidayNames.ChristmasEve,
+                CalculateChristmasEve(year),
+                CalculateChristmasEve(year),
+                HolidayCategory.Religious),
+            [HolidayNames.ChristmasDay] = year => new Holiday(
+                HolidayNames.ChristmasDay,
+                CalculateChristmasDay(year),
+                CalculateChristmasDay(year),
                 HolidayCategory.Religious)
         };
 
@@ -134,6 +187,11 @@ public static class HolidayCalculator
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         var normalizedName = name.Trim();
+
+        if (FederalHolidayAliases.TryGetValue(normalizedName, out var canonicalName))
+        {
+            normalizedName = canonicalName;
+        }
 
         if (FederalHolidayFactories.TryGetValue(normalizedName, out var holidayFactory))
         {
@@ -157,6 +215,11 @@ public static class HolidayCalculator
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         var normalizedName = name.Trim();
+
+        if (ReligiousHolidayAliases.TryGetValue(normalizedName, out var canonicalName))
+        {
+            normalizedName = canonicalName;
+        }
 
         if (ReligiousHolidayFactories.TryGetValue(normalizedName, out var holidayFactory))
         {
@@ -226,9 +289,11 @@ public static class HolidayCalculator
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="year"/> is outside the supported Gregorian range.</exception>
     public static IReadOnlyList<Holiday> GetReligiousHolidays(int year)
     {
-        return
+        Holiday[] holidays =
         [
+            GetReligiousHoliday(HolidayNames.Epiphany, year),
             GetReligiousHoliday(HolidayNames.AshWednesday, year),
+            GetReligiousHoliday(HolidayNames.Annunciation, year),
             GetReligiousHoliday(HolidayNames.PalmSunday, year),
             GetReligiousHoliday(HolidayNames.MaundyThursday, year),
             GetReligiousHoliday(HolidayNames.GoodFriday, year),
@@ -236,10 +301,17 @@ public static class HolidayCalculator
             GetReligiousHoliday(HolidayNames.EasterSunday, year),
             GetReligiousHoliday(HolidayNames.EasterMonday, year),
             GetReligiousHoliday(HolidayNames.AscensionDay, year),
-            GetReligiousHoliday(HolidayNames.PentecostSunday, year)
-            ,
-            GetReligiousHoliday(HolidayNames.PentecostMonday, year)
+            GetReligiousHoliday(HolidayNames.PentecostSunday, year),
+            GetReligiousHoliday(HolidayNames.PentecostMonday, year),
+            GetReligiousHoliday(HolidayNames.AllSaintsDay, year),
+            GetReligiousHoliday(HolidayNames.AllSoulsDay, year),
+            GetReligiousHoliday(HolidayNames.ChristmasEve, year),
+            GetReligiousHoliday(HolidayNames.ChristmasDay, year)
         ];
+
+        return holidays
+            .OrderBy(holiday => holiday.ActualDate)
+            .ToArray();
     }
 
     /// <summary>
@@ -317,11 +389,27 @@ public static class HolidayCalculator
     }
 
     /// <summary>
+    /// Calculates Epiphany for the supplied year.
+    /// </summary>
+    public static DateTime CalculateEpiphany(int year)
+    {
+        return CalculateFixedHoliday(year, January, 6);
+    }
+
+    /// <summary>
     /// Calculates Ash Wednesday for the supplied year.
     /// </summary>
     public static DateTime CalculateAshWednesday(int year)
     {
         return CalculateEasterSunday(year).AddDays(-46);
+    }
+
+    /// <summary>
+    /// Calculates Annunciation for the supplied year.
+    /// </summary>
+    public static DateTime CalculateAnnunciation(int year)
+    {
+        return CalculateFixedHoliday(year, March, 25);
     }
 
     /// <summary>
@@ -607,6 +695,30 @@ public static class HolidayCalculator
     public static DateTime CalculatePentecostMonday(int year)
     {
         return CalculateEasterSunday(year).AddDays(50);
+    }
+
+    /// <summary>
+    /// Calculates All Saints' Day for the supplied year.
+    /// </summary>
+    public static DateTime CalculateAllSaintsDay(int year)
+    {
+        return CalculateFixedHoliday(year, November, 1);
+    }
+
+    /// <summary>
+    /// Calculates All Souls' Day for the supplied year.
+    /// </summary>
+    public static DateTime CalculateAllSoulsDay(int year)
+    {
+        return CalculateFixedHoliday(year, November, 2);
+    }
+
+    /// <summary>
+    /// Calculates Christmas Eve for the supplied year.
+    /// </summary>
+    public static DateTime CalculateChristmasEve(int year)
+    {
+        return CalculateFixedHoliday(year, December, 24);
     }
 
     private static void ValidateDateYear(int year)

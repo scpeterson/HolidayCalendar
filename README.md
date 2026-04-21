@@ -1,6 +1,6 @@
 # HolidayCalendar
 
-`HolidayCalendar` is a .NET library for calculating US federal holidays and supported religious holidays.
+`HolidayCalendar` is a .NET library for calculating US federal holidays and supported Christian religious holidays.
 
 ## Features
 
@@ -58,7 +58,9 @@ foreach (var holiday in holidays)
 
 Supported religious holidays currently include:
 
+- Epiphany
 - Ash Wednesday
+- Annunciation
 - Palm Sunday
 - Maundy Thursday
 - Good Friday
@@ -68,6 +70,10 @@ Supported religious holidays currently include:
 - Ascension Day
 - Pentecost Sunday
 - Pentecost Monday
+- All Saints' Day
+- All Souls' Day
+- Christmas Eve
+- Christmas Day
 
 ### Get a single religious holiday by name
 
@@ -79,6 +85,17 @@ var easter = HolidayCalculator.GetReligiousHoliday("Easter Sunday", 2025);
 Console.WriteLine(easter.ActualDate); // 4/20/2025
 Console.WriteLine(easter.Category);   // Religious
 ```
+
+Both lookup APIs also support a small set of friendly aliases, for example:
+
+- `MLK Day`
+- `Washington's Birthday`
+- `Fourth of July`
+- `Xmas`
+- `Easter`
+- `Holy Thursday`
+- `Ascension Thursday`
+- `Pentecost`
 
 ### Get upcoming federal holidays
 

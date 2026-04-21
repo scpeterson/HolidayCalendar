@@ -82,11 +82,31 @@ public sealed class EasterHolidayCalculatorShould
     }
 
     [Theory]
+    [InlineData(2025, 1, 6)]
+    [InlineData(2026, 1, 6)]
+    public void CalculateExpectedEpiphany(int year, int month, int day)
+    {
+        var result = CalculateEpiphany(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
     [InlineData(2025, 3, 5)]
     [InlineData(2026, 2, 18)]
     public void CalculateExpectedAshWednesday(int year, int month, int day)
     {
         var result = CalculateAshWednesday(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 3, 25)]
+    [InlineData(2026, 3, 25)]
+    public void CalculateExpectedAnnunciation(int year, int month, int day)
+    {
+        var result = CalculateAnnunciation(year);
 
         result.Should().Be(new DateTime(year, month, day));
     }
@@ -158,6 +178,36 @@ public sealed class EasterHolidayCalculatorShould
     public void CalculateExpectedPentecostMonday(int year, int month, int day)
     {
         var result = CalculatePentecostMonday(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 11, 1)]
+    [InlineData(2026, 11, 1)]
+    public void CalculateExpectedAllSaintsDay(int year, int month, int day)
+    {
+        var result = CalculateAllSaintsDay(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 11, 2)]
+    [InlineData(2026, 11, 2)]
+    public void CalculateExpectedAllSoulsDay(int year, int month, int day)
+    {
+        var result = CalculateAllSoulsDay(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 12, 24)]
+    [InlineData(2026, 12, 24)]
+    public void CalculateExpectedChristmasEve(int year, int month, int day)
+    {
+        var result = CalculateChristmasEve(year);
 
         result.Should().Be(new DateTime(year, month, day));
     }

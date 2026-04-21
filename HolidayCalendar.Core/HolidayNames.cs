@@ -17,7 +17,9 @@ public static class HolidayNames
     public const string Thanksgiving = "Thanksgiving";
     public const string ChristmasDay = "Christmas Day";
 
+    public const string Epiphany = "Epiphany";
     public const string AshWednesday = "Ash Wednesday";
+    public const string Annunciation = "Annunciation";
     public const string PalmSunday = "Palm Sunday";
     public const string MaundyThursday = "Maundy Thursday";
     public const string GoodFriday = "Good Friday";
@@ -27,4 +29,7 @@ public static class HolidayNames
     public const string AscensionDay = "Ascension Day";
     public const string PentecostSunday = "Pentecost Sunday";
     public const string PentecostMonday = "Pentecost Monday";
+    public const string AllSaintsDay = "All Saints' Day";
+    public const string AllSoulsDay = "All Souls' Day";
+    public const string ChristmasEve = "Christmas Eve";
 }

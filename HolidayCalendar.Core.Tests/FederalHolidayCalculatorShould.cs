@@ -293,4 +293,17 @@ public sealed class FederalHolidayCalculatorShould
         holiday.Name.Should().Be(HolidayNames.ChristmasDay);
         holiday.ActualDate.Should().Be(new DateTime(2025, 12, 25));
     }
+
+    [Theory]
+    [InlineData("MLK Day", HolidayNames.MartinLutherKingJrDay, 2025, 1, 20)]
+    [InlineData("Washington's Birthday", HolidayNames.PresidentsDay, 2025, 2, 17)]
+    [InlineData("Fourth of July", HolidayNames.IndependenceDay, 2025, 7, 4)]
+    [InlineData("Xmas", HolidayNames.ChristmasDay, 2025, 12, 25)]
+    public void FindFederalHolidaysBySupportedAliases(string alias, string expectedName, int year, int month, int day)
+    {
+        var holiday = GetFederalHoliday(alias, year);
+
+        holiday.Name.Should().Be(expectedName);
+        holiday.ActualDate.Should().Be(new DateTime(year, month, day));
+    }
 }

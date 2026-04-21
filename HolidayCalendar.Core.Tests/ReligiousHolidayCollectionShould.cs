@@ -11,9 +11,11 @@ public sealed class ReligiousHolidayCollectionShould
     {
         var holidays = GetReligiousHolidays(2025);
 
-        holidays.Should().HaveCount(10);
+        holidays.Should().HaveCount(16);
         holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.Epiphany,
             HolidayNames.AshWednesday,
+            HolidayNames.Annunciation,
             HolidayNames.PalmSunday,
             HolidayNames.MaundyThursday,
             HolidayNames.GoodFriday,
@@ -22,14 +24,20 @@ public sealed class ReligiousHolidayCollectionShould
             HolidayNames.EasterMonday,
             HolidayNames.AscensionDay,
             HolidayNames.PentecostSunday,
-            HolidayNames.PentecostMonday);
+            HolidayNames.PentecostMonday,
+            HolidayNames.AllSaintsDay,
+            HolidayNames.AllSoulsDay,
+            HolidayNames.ChristmasEve,
+            HolidayNames.ChristmasDay);
         holidays.Select(holiday => holiday.ActualDate).Should().BeInAscendingOrder();
         holidays.Should().OnlyContain(holiday => holiday.Category == HolidayCategory.Religious);
         holidays.Should().OnlyContain(holiday => !holiday.IsObservedOnDifferentDate);
     }
 
     [Theory]
+    [InlineData(HolidayNames.Epiphany, 2025, 1, 6)]
     [InlineData(HolidayNames.AshWednesday, 2025, 3, 5)]
+    [InlineData(HolidayNames.Annunciation, 2025, 3, 25)]
     [InlineData(HolidayNames.PalmSunday, 2025, 4, 13)]
     [InlineData(HolidayNames.MaundyThursday, 2025, 4, 17)]
     [InlineData(HolidayNames.GoodFriday, 2025, 4, 18)]
@@ -39,6 +47,10 @@ public sealed class ReligiousHolidayCollectionShould
     [InlineData(HolidayNames.AscensionDay, 2025, 5, 29)]
     [InlineData(HolidayNames.PentecostSunday, 2025, 6, 8)]
     [InlineData(HolidayNames.PentecostMonday, 2025, 6, 9)]
+    [InlineData(HolidayNames.AllSaintsDay, 2025, 11, 1)]
+    [InlineData(HolidayNames.AllSoulsDay, 2025, 11, 2)]
+    [InlineData(HolidayNames.ChristmasEve, 2025, 12, 24)]
+    [InlineData(HolidayNames.ChristmasDay, 2025, 12, 25)]
     public void FindReligiousHolidaysByName(string name, int year, int month, int day)
     {
         var holiday = GetReligiousHoliday(name, year);
@@ -56,6 +68,21 @@ public sealed class ReligiousHolidayCollectionShould
 
         holiday.Name.Should().Be(HolidayNames.EasterSunday);
         holiday.ActualDate.Should().Be(new DateTime(2025, 4, 20));
+    }
+
+    [Theory]
+    [InlineData("Easter", HolidayNames.EasterSunday, 2025, 4, 20)]
+    [InlineData("Holy Thursday", HolidayNames.MaundyThursday, 2025, 4, 17)]
+    [InlineData("Ascension Thursday", HolidayNames.AscensionDay, 2025, 5, 29)]
+    [InlineData("Pentecost", HolidayNames.PentecostSunday, 2025, 6, 8)]
+    [InlineData("All Hallows' Day", HolidayNames.AllSaintsDay, 2025, 11, 1)]
+    [InlineData("Christmas", HolidayNames.ChristmasDay, 2025, 12, 25)]
+    public void FindReligiousHolidaysBySupportedAliases(string alias, string expectedName, int year, int month, int day)
+    {
+        var holiday = GetReligiousHoliday(alias, year);
+
+        holiday.Name.Should().Be(expectedName);
+        holiday.ActualDate.Should().Be(new DateTime(year, month, day));
     }
 
     [Fact]
@@ -109,12 +136,12 @@ public sealed class ReligiousHolidayCollectionShould
     [Fact]
     public void ReturnUpcomingReligiousHolidaysAcrossYearBoundaries()
     {
-        var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 6, 9), 2);
+        var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 12, 26), 2);
 
         holidays.Select(holiday => holiday.Name).Should().Equal(
-            HolidayNames.PentecostMonday,
+            HolidayNames.Epiphany,
             HolidayNames.AshWednesday);
-        holidays[0].ActualDate.Should().Be(new DateTime(2025, 6, 9));
+        holidays[0].ActualDate.Should().Be(new DateTime(2026, 1, 6));
         holidays[1].ActualDate.Should().Be(new DateTime(2026, 2, 18));
     }
 
