@@ -118,6 +118,8 @@ Both lookup APIs also support a small set of friendly aliases, for example:
 - `Holy Thursday`
 - `Ascension Thursday`
 - `Pentecost`
+- `All Hallows' Day`
+- `Christmas`
 
 ### Alias lookup examples
 
