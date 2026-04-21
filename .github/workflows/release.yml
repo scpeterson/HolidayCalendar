@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="0.1.0-dev.${GITHUB_RUN_NUMBER}"
+          fi
+
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+
+      - name: Restore dependencies
+        run: dotnet restore HolidayCalendar.sln
+
+      - name: Build solution
+        run: dotnet build HolidayCalendar.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test HolidayCalendar.sln --configuration Release --no-build
+
+      - name: Pack library
+        run: >
+          dotnet pack HolidayCalendar.Core/HolidayCalendar.Core.csproj
+          --configuration Release
+          --no-build
+          -p:Version=${{ steps.version.outputs.version }}
+          --output artifacts
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: holidaycalendar-nuget
+          path: artifacts/*.nupkg
+
+      - name: Create GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh release create "${{ github.ref_name }}"
+          artifacts/*.nupkg
+          --generate-notes
+          --title "Release ${{ github.ref_name }}"

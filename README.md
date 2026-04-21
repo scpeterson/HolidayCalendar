@@ -137,3 +137,9 @@ dotnet test HolidayCalendar.sln
 ```
 
 GitHub Actions also runs restore, build, and tests on pushes and pull requests to `main`.
+
+## Releases
+
+- CI validates restore, build, test, and package creation on `main`
+- The release workflow builds a versioned package for tags like `v0.1.0`
+- Release notes are tracked in [CHANGELOG.md](CHANGELOG.md)
