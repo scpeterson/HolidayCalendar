@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HolidayCalendar.Core", "HolidayCalendar.Core\HolidayCalendar.Core.csproj", "{FADCF560-AB59-4115-9929-8B638053631E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HolidayCalendar.Core.Tests", "HolidayCalendar.Core.Tests\HolidayCalendar.Core.Tests.csproj", "{392EE5B6-1A60-4334-95FB-1072975FD0A5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FADCF560-AB59-4115-9929-8B638053631E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FADCF560-AB59-4115-9929-8B638053631E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FADCF560-AB59-4115-9929-8B638053631E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FADCF560-AB59-4115-9929-8B638053631E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{392EE5B6-1A60-4334-95FB-1072975FD0A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{392EE5B6-1A60-4334-95FB-1072975FD0A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{392EE5B6-1A60-4334-95FB-1072975FD0A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{392EE5B6-1A60-4334-95FB-1072975FD0A5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
