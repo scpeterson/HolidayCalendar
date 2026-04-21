@@ -4,6 +4,19 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackageId>HolidayCalendar</PackageId>
+        <Version>0.1.0</Version>
+        <Authors>Scott Peterson</Authors>
+        <Description>Holiday calculation library for United States federal holidays and Easter-related dates.</Description>
+        <PackageTags>holidays;calendar;federal-holidays;easter;dotnet</PackageTags>
+        <RepositoryUrl>https://github.com/scpeterson/HolidayCalendar</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
 </Project>
