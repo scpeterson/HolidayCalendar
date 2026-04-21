@@ -6,15 +6,6 @@ namespace HolidayCalendar.Core.Tests;
 
 public sealed class HolidayRuleCalculatorShould
 {
-    [Fact]
-    public void ExposeDateConstantsThatMatchDateTimeConventions()
-    {
-        Constants.Wednesday.Should().Be((int)DayOfWeek.Wednesday);
-        Constants.Thursday.Should().Be((int)DayOfWeek.Thursday);
-        Constants.January.Should().Be(1);
-        Constants.December.Should().Be(12);
-    }
-
     [Theory]
     [InlineData(2025, 1, 1)]
     [InlineData(2026, 12, 25)]
@@ -31,7 +22,7 @@ public sealed class HolidayRuleCalculatorShould
     [InlineData(10000)]
     public void RejectYearsOutsideDateTimeRangeForFixedHolidayCalculations(int year)
     {
-        var action = () => CalculateFixedHoliday(year, Constants.January, 1);
+        var action = () => CalculateFixedHoliday(year, 1, 1);
 
         action.Should()
             .Throw<ArgumentOutOfRangeException>()
@@ -77,7 +68,7 @@ public sealed class HolidayRuleCalculatorShould
     [InlineData(6)]
     public void RejectInvalidNthWeekdayOccurrence(int occurrence)
     {
-        var action = () => CalculateNthWeekdayOfMonth(2025, Constants.January, DayOfWeek.Monday, occurrence);
+        var action = () => CalculateNthWeekdayOfMonth(2025, 1, DayOfWeek.Monday, occurrence);
 
         action.Should()
             .Throw<ArgumentOutOfRangeException>()
@@ -88,7 +79,7 @@ public sealed class HolidayRuleCalculatorShould
     [Fact]
     public void RejectANonexistentNthWeekdayOccurrence()
     {
-        var action = () => CalculateNthWeekdayOfMonth(2025, Constants.February, DayOfWeek.Monday, 5);
+        var action = () => CalculateNthWeekdayOfMonth(2025, 2, DayOfWeek.Monday, 5);
 
         action.Should()
             .Throw<ArgumentOutOfRangeException>()
@@ -101,7 +92,7 @@ public sealed class HolidayRuleCalculatorShould
     [InlineData(10000)]
     public void RejectYearsOutsideDateTimeRangeForNthWeekdayCalculations(int year)
     {
-        var action = () => CalculateNthWeekdayOfMonth(year, Constants.January, DayOfWeek.Monday, 1);
+        var action = () => CalculateNthWeekdayOfMonth(year, 1, DayOfWeek.Monday, 1);
 
         action.Should()
             .Throw<ArgumentOutOfRangeException>()
@@ -114,7 +105,7 @@ public sealed class HolidayRuleCalculatorShould
     [InlineData(10000)]
     public void RejectYearsOutsideDateTimeRangeForLastWeekdayCalculations(int year)
     {
-        var action = () => CalculateLastWeekdayOfMonth(year, Constants.January, DayOfWeek.Monday);
+        var action = () => CalculateLastWeekdayOfMonth(year, 1, DayOfWeek.Monday);
 
         action.Should()
             .Throw<ArgumentOutOfRangeException>()

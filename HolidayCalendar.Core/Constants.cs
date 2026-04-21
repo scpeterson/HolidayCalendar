@@ -1,6 +1,6 @@
 namespace HolidayCalendar.Core;
 
-public static class Constants
+internal static class Constants
 {
     public const int Sunday = 0;
     public const int Monday = 1;
