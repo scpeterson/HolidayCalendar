@@ -70,20 +70,55 @@ public static class HolidayCalculator
     private static readonly IReadOnlyDictionary<string, Func<int, Holiday>> ReligiousHolidayFactories =
         new Dictionary<string, Func<int, Holiday>>(StringComparer.OrdinalIgnoreCase)
         {
+            [HolidayNames.AshWednesday] = year => new Holiday(
+                HolidayNames.AshWednesday,
+                CalculateAshWednesday(year),
+                CalculateAshWednesday(year),
+                HolidayCategory.Religious),
+            [HolidayNames.PalmSunday] = year => new Holiday(
+                HolidayNames.PalmSunday,
+                CalculatePalmSunday(year),
+                CalculatePalmSunday(year),
+                HolidayCategory.Religious),
+            [HolidayNames.MaundyThursday] = year => new Holiday(
+                HolidayNames.MaundyThursday,
+                CalculateMaundyThursday(year),
+                CalculateMaundyThursday(year),
+                HolidayCategory.Religious),
             [HolidayNames.GoodFriday] = year => new Holiday(
                 HolidayNames.GoodFriday,
                 CalculateGoodFriday(year),
                 CalculateGoodFriday(year),
+                HolidayCategory.Religious),
+            [HolidayNames.HolySaturday] = year => new Holiday(
+                HolidayNames.HolySaturday,
+                CalculateHolySaturday(year),
+                CalculateHolySaturday(year),
                 HolidayCategory.Religious),
             [HolidayNames.EasterSunday] = year => new Holiday(
                 HolidayNames.EasterSunday,
                 CalculateEasterSunday(year),
                 CalculateEasterSunday(year),
                 HolidayCategory.Religious),
+            [HolidayNames.EasterMonday] = year => new Holiday(
+                HolidayNames.EasterMonday,
+                CalculateEasterMonday(year),
+                CalculateEasterMonday(year),
+                HolidayCategory.Religious),
+            [HolidayNames.AscensionDay] = year => new Holiday(
+                HolidayNames.AscensionDay,
+                CalculateAscensionDay(year),
+                CalculateAscensionDay(year),
+                HolidayCategory.Religious),
             [HolidayNames.PentecostSunday] = year => new Holiday(
                 HolidayNames.PentecostSunday,
                 CalculatePentecostSunday(year),
                 CalculatePentecostSunday(year),
+                HolidayCategory.Religious),
+            [HolidayNames.PentecostMonday] = year => new Holiday(
+                HolidayNames.PentecostMonday,
+                CalculatePentecostMonday(year),
+                CalculatePentecostMonday(year),
                 HolidayCategory.Religious)
         };
 
@@ -193,9 +228,17 @@ public static class HolidayCalculator
     {
         return
         [
+            GetReligiousHoliday(HolidayNames.AshWednesday, year),
+            GetReligiousHoliday(HolidayNames.PalmSunday, year),
+            GetReligiousHoliday(HolidayNames.MaundyThursday, year),
             GetReligiousHoliday(HolidayNames.GoodFriday, year),
+            GetReligiousHoliday(HolidayNames.HolySaturday, year),
             GetReligiousHoliday(HolidayNames.EasterSunday, year),
+            GetReligiousHoliday(HolidayNames.EasterMonday, year),
+            GetReligiousHoliday(HolidayNames.AscensionDay, year),
             GetReligiousHoliday(HolidayNames.PentecostSunday, year)
+            ,
+            GetReligiousHoliday(HolidayNames.PentecostMonday, year)
         ];
     }
 
@@ -271,6 +314,30 @@ public static class HolidayCalculator
             DayOfWeek.Sunday => actualDate.AddDays(1),
             _ => actualDate
         };
+    }
+
+    /// <summary>
+    /// Calculates Ash Wednesday for the supplied year.
+    /// </summary>
+    public static DateTime CalculateAshWednesday(int year)
+    {
+        return CalculateEasterSunday(year).AddDays(-46);
+    }
+
+    /// <summary>
+    /// Calculates Palm Sunday for the supplied year.
+    /// </summary>
+    public static DateTime CalculatePalmSunday(int year)
+    {
+        return CalculateEasterSunday(year).AddDays(-7);
+    }
+
+    /// <summary>
+    /// Calculates Maundy Thursday for the supplied year.
+    /// </summary>
+    public static DateTime CalculateMaundyThursday(int year)
+    {
+        return CalculateEasterSunday(year).AddDays(-3);
     }
 
     /// <summary>
@@ -503,11 +570,43 @@ public static class HolidayCalculator
     }
 
     /// <summary>
+    /// Calculates Holy Saturday for the supplied year.
+    /// </summary>
+    public static DateTime CalculateHolySaturday(int year)
+    {
+        return CalculateEasterSunday(year).AddDays(-1);
+    }
+
+    /// <summary>
+    /// Calculates Easter Monday for the supplied year.
+    /// </summary>
+    public static DateTime CalculateEasterMonday(int year)
+    {
+        return CalculateEasterSunday(year).AddDays(1);
+    }
+
+    /// <summary>
+    /// Calculates Ascension Day for the supplied year.
+    /// </summary>
+    public static DateTime CalculateAscensionDay(int year)
+    {
+        return CalculateEasterSunday(year).AddDays(39);
+    }
+
+    /// <summary>
     /// Calculates Pentecost Sunday for the supplied year.
     /// </summary>
     public static DateTime CalculatePentecostSunday(int year)
     {
         return CalculateEasterSunday(year).AddDays(49);
+    }
+
+    /// <summary>
+    /// Calculates Pentecost Monday for the supplied year.
+    /// </summary>
+    public static DateTime CalculatePentecostMonday(int year)
+    {
+        return CalculateEasterSunday(year).AddDays(50);
     }
 
     private static void ValidateDateYear(int year)

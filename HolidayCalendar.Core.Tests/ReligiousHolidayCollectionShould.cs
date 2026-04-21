@@ -11,20 +11,34 @@ public sealed class ReligiousHolidayCollectionShould
     {
         var holidays = GetReligiousHolidays(2025);
 
-        holidays.Should().HaveCount(3);
+        holidays.Should().HaveCount(10);
         holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.AshWednesday,
+            HolidayNames.PalmSunday,
+            HolidayNames.MaundyThursday,
             HolidayNames.GoodFriday,
+            HolidayNames.HolySaturday,
             HolidayNames.EasterSunday,
-            HolidayNames.PentecostSunday);
+            HolidayNames.EasterMonday,
+            HolidayNames.AscensionDay,
+            HolidayNames.PentecostSunday,
+            HolidayNames.PentecostMonday);
         holidays.Select(holiday => holiday.ActualDate).Should().BeInAscendingOrder();
         holidays.Should().OnlyContain(holiday => holiday.Category == HolidayCategory.Religious);
         holidays.Should().OnlyContain(holiday => !holiday.IsObservedOnDifferentDate);
     }
 
     [Theory]
+    [InlineData(HolidayNames.AshWednesday, 2025, 3, 5)]
+    [InlineData(HolidayNames.PalmSunday, 2025, 4, 13)]
+    [InlineData(HolidayNames.MaundyThursday, 2025, 4, 17)]
     [InlineData(HolidayNames.GoodFriday, 2025, 4, 18)]
+    [InlineData(HolidayNames.HolySaturday, 2025, 4, 19)]
     [InlineData(HolidayNames.EasterSunday, 2025, 4, 20)]
+    [InlineData(HolidayNames.EasterMonday, 2025, 4, 21)]
+    [InlineData(HolidayNames.AscensionDay, 2025, 5, 29)]
     [InlineData(HolidayNames.PentecostSunday, 2025, 6, 8)]
+    [InlineData(HolidayNames.PentecostMonday, 2025, 6, 9)]
     public void FindReligiousHolidaysByName(string name, int year, int month, int day)
     {
         var holiday = GetReligiousHoliday(name, year);
@@ -47,7 +61,7 @@ public sealed class ReligiousHolidayCollectionShould
     [Fact]
     public void RejectUnknownReligiousHolidayNames()
     {
-        var action = () => GetReligiousHoliday("Ascension Day", 2025);
+        var action = () => GetReligiousHoliday("Corpus Christi", 2025);
 
         action.Should()
             .Throw<ArgumentException>()
@@ -88,8 +102,8 @@ public sealed class ReligiousHolidayCollectionShould
         var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 4, 19), 2);
 
         holidays.Select(holiday => holiday.Name).Should().Equal(
-            HolidayNames.EasterSunday,
-            HolidayNames.PentecostSunday);
+            HolidayNames.HolySaturday,
+            HolidayNames.EasterSunday);
     }
 
     [Fact]
@@ -98,10 +112,10 @@ public sealed class ReligiousHolidayCollectionShould
         var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 6, 9), 2);
 
         holidays.Select(holiday => holiday.Name).Should().Equal(
-            HolidayNames.GoodFriday,
-            HolidayNames.EasterSunday);
-        holidays[0].ActualDate.Should().Be(new DateTime(2026, 4, 3));
-        holidays[1].ActualDate.Should().Be(new DateTime(2026, 4, 5));
+            HolidayNames.PentecostMonday,
+            HolidayNames.AshWednesday);
+        holidays[0].ActualDate.Should().Be(new DateTime(2025, 6, 9));
+        holidays[1].ActualDate.Should().Be(new DateTime(2026, 2, 18));
     }
 
     [Fact]

@@ -11,7 +11,7 @@
 - Single-holiday lookup by name
 - Full federal holiday list for a year
 - Religious holiday list and lookup support
-- Easter, Good Friday, and Pentecost calculations
+- Easter-derived religious holiday calculations
 
 ## Target Framework
 
@@ -55,6 +55,19 @@ foreach (var holiday in holidays)
     Console.WriteLine($"{holiday.Name}: {holiday.ActualDate:d}");
 }
 ```
+
+Supported religious holidays currently include:
+
+- Ash Wednesday
+- Palm Sunday
+- Maundy Thursday
+- Good Friday
+- Holy Saturday
+- Easter Sunday
+- Easter Monday
+- Ascension Day
+- Pentecost Sunday
+- Pentecost Monday
 
 ### Get a single religious holiday by name
 

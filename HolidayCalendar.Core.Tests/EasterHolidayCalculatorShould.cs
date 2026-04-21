@@ -82,12 +82,82 @@ public sealed class EasterHolidayCalculatorShould
     }
 
     [Theory]
+    [InlineData(2025, 3, 5)]
+    [InlineData(2026, 2, 18)]
+    public void CalculateExpectedAshWednesday(int year, int month, int day)
+    {
+        var result = CalculateAshWednesday(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 4, 13)]
+    [InlineData(2026, 3, 29)]
+    public void CalculateExpectedPalmSunday(int year, int month, int day)
+    {
+        var result = CalculatePalmSunday(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 4, 17)]
+    [InlineData(2026, 4, 2)]
+    public void CalculateExpectedMaundyThursday(int year, int month, int day)
+    {
+        var result = CalculateMaundyThursday(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 4, 19)]
+    [InlineData(2026, 4, 4)]
+    public void CalculateExpectedHolySaturday(int year, int month, int day)
+    {
+        var result = CalculateHolySaturday(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 4, 21)]
+    [InlineData(2026, 4, 6)]
+    public void CalculateExpectedEasterMonday(int year, int month, int day)
+    {
+        var result = CalculateEasterMonday(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 5, 29)]
+    [InlineData(2026, 5, 14)]
+    public void CalculateExpectedAscensionDay(int year, int month, int day)
+    {
+        var result = CalculateAscensionDay(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
     [InlineData(1818, 5, 10)] // earliest possible Gregorian Easter plus 49 days
     [InlineData(1943, 6, 13)] // latest-range Easter plus 49 days
     [InlineData(2000, 6, 11)] // leap-century regression check
     public void CalculateExpectedPentecostSunday(int year, int month, int day)
     {
         var result = CalculatePentecostSunday(year);
+
+        result.Should().Be(new DateTime(year, month, day));
+    }
+
+    [Theory]
+    [InlineData(2025, 6, 9)]
+    [InlineData(2026, 5, 25)]
+    public void CalculateExpectedPentecostMonday(int year, int month, int day)
+    {
+        var result = CalculatePentecostMonday(year);
 
         result.Should().Be(new DateTime(year, month, day));
     }
