@@ -3,7 +3,7 @@
 namespace HolidayCalendar.Core;
 
 /// <summary>
-/// Provides reusable date rules and holiday calculations for United States federal holidays and Easter-related dates.
+/// Provides reusable date rules and holiday calculations for United States federal holidays and supported religious holidays.
 /// </summary>
 public static class HolidayCalculator
 {
@@ -84,6 +84,42 @@ public static class HolidayCalculator
     }
 
     /// <summary>
+    /// Gets a single supported religious holiday for the supplied year.
+    /// </summary>
+    /// <param name="name">The holiday name to resolve. Matching is case-insensitive.</param>
+    /// <param name="year">The year for which the holiday should be calculated.</param>
+    /// <returns>The matching religious holiday entry.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="name"/> is blank or does not identify a supported religious holiday.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the named holiday is not supported for the requested year.</exception>
+    public static Holiday GetReligiousHoliday(string name, int year)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        var normalizedName = name.Trim();
+
+        return normalizedName.ToUpperInvariant() switch
+        {
+            "GOOD FRIDAY" => new Holiday(
+                "Good Friday",
+                CalculateGoodFriday(year),
+                CalculateGoodFriday(year),
+                HolidayCategory.Religious),
+            "EASTER SUNDAY" => new Holiday(
+                "Easter Sunday",
+                CalculateEasterSunday(year),
+                CalculateEasterSunday(year),
+                HolidayCategory.Religious),
+            "PENTECOST SUNDAY" => new Holiday(
+                "Pentecost Sunday",
+                CalculatePentecostSunday(year),
+                CalculatePentecostSunday(year),
+                HolidayCategory.Religious),
+            _ => throw new ArgumentException(
+                $"Religious holiday '{name}' is not supported.",
+                nameof(name))
+        };
+    }
+
+    /// <summary>
     /// Gets the supported United States federal holidays for the supplied year.
     /// </summary>
     /// <param name="year">The year for which holidays should be returned.</param>
@@ -119,6 +155,22 @@ public static class HolidayCalculator
             CalculateChristmasDay, CalculateObservedChristmasDay);
 
         return holidays;
+    }
+
+    /// <summary>
+    /// Gets the supported religious holidays for the supplied year.
+    /// </summary>
+    /// <param name="year">The year for which holidays should be returned.</param>
+    /// <returns>An ordered list of supported religious holidays for the supplied year.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="year"/> is outside the supported Gregorian range.</exception>
+    public static IReadOnlyList<Holiday> GetReligiousHolidays(int year)
+    {
+        return
+        [
+            GetReligiousHoliday("Good Friday", year),
+            GetReligiousHoliday("Easter Sunday", year),
+            GetReligiousHoliday("Pentecost Sunday", year)
+        ];
     }
 
     /// <summary>

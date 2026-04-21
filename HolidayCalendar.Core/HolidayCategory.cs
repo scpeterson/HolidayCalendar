@@ -8,5 +8,10 @@ public enum HolidayCategory
     /// <summary>
     /// A federal holiday recognized by the United States federal government.
     /// </summary>
-    Federal
+    Federal,
+
+    /// <summary>
+    /// A holiday derived from a religious calendar or observance.
+    /// </summary>
+    Religious
 }

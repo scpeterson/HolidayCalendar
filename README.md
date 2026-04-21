@@ -1,6 +1,6 @@
 # HolidayCalendar
 
-`HolidayCalendar` is a .NET library for calculating US federal holidays and Easter-related dates.
+`HolidayCalendar` is a .NET library for calculating US federal holidays and supported religious holidays.
 
 ## Features
 
@@ -10,6 +10,7 @@
 - Observed holiday date handling
 - Single-holiday lookup by name
 - Full federal holiday list for a year
+- Religious holiday list and lookup support
 - Easter, Good Friday, and Pentecost calculations
 
 ## Target Framework
@@ -40,6 +41,30 @@ var christmas = HolidayCalculator.GetFederalHoliday("Christmas Day", 2025);
 
 Console.WriteLine(christmas.ActualDate);   // 12/25/2025
 Console.WriteLine(christmas.ObservedDate); // 12/25/2025
+```
+
+### Get supported religious holidays for a year
+
+```csharp
+using HolidayCalendar.Core;
+
+var holidays = HolidayCalculator.GetReligiousHolidays(2025);
+
+foreach (var holiday in holidays)
+{
+    Console.WriteLine($"{holiday.Name}: {holiday.ActualDate:d}");
+}
+```
+
+### Get a single religious holiday by name
+
+```csharp
+using HolidayCalendar.Core;
+
+var easter = HolidayCalculator.GetReligiousHoliday("Easter Sunday", 2025);
+
+Console.WriteLine(easter.ActualDate); // 4/20/2025
+Console.WriteLine(easter.Category);   // Religious
 ```
 
 ### Work with observed dates
