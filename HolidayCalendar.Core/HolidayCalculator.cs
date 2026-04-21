@@ -172,6 +172,18 @@ public static class HolidayCalculator
     }
 
     /// <summary>
+    /// Gets the next federal holidays on or after the supplied date, ordered by actual holiday date.
+    /// </summary>
+    /// <param name="fromDate">The date from which upcoming holidays should be returned.</param>
+    /// <param name="count">The number of upcoming holidays to return.</param>
+    /// <returns>An ordered list of upcoming federal holidays.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="count"/> is less than 1.</exception>
+    public static IReadOnlyList<Holiday> GetUpcomingFederalHolidays(DateTime fromDate, int count)
+    {
+        return GetUpcomingHolidays(fromDate, count, GetFederalHolidays);
+    }
+
+    /// <summary>
     /// Gets the supported religious holidays for the supplied year.
     /// </summary>
     /// <param name="year">The year for which holidays should be returned.</param>
@@ -185,6 +197,18 @@ public static class HolidayCalculator
             GetReligiousHoliday(HolidayNames.EasterSunday, year),
             GetReligiousHoliday(HolidayNames.PentecostSunday, year)
         ];
+    }
+
+    /// <summary>
+    /// Gets the next supported religious holidays on or after the supplied date, ordered by actual holiday date.
+    /// </summary>
+    /// <param name="fromDate">The date from which upcoming holidays should be returned.</param>
+    /// <param name="count">The number of upcoming holidays to return.</param>
+    /// <returns>An ordered list of upcoming religious holidays.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="count"/> is less than 1.</exception>
+    public static IReadOnlyList<Holiday> GetUpcomingReligiousHolidays(DateTime fromDate, int count)
+    {
+        return GetUpcomingHolidays(fromDate, count, GetReligiousHolidays);
     }
 
     /// <summary>
@@ -504,6 +528,36 @@ public static class HolidayCalculator
             throw new ArgumentOutOfRangeException(nameof(year), year,
                 $"{holidayName} is only supported for federal holiday calculations in {firstSupportedYear} and later.");
         }
+    }
+
+    private static IReadOnlyList<Holiday> GetUpcomingHolidays(
+        DateTime fromDate,
+        int count,
+        Func<int, IReadOnlyList<Holiday>> holidayProvider)
+    {
+        if (count < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(count), count, "Count must be greater than zero.");
+        }
+
+        var upcomingHolidays = new List<Holiday>();
+        var startDate = fromDate.Date;
+        var year = startDate.Year;
+
+        while (upcomingHolidays.Count < count)
+        {
+            upcomingHolidays.AddRange(
+                holidayProvider(year)
+                    .Where(holiday => holiday.ActualDate >= startDate));
+
+            year++;
+            startDate = new DateTime(year, 1, 1);
+        }
+
+        return upcomingHolidays
+            .OrderBy(holiday => holiday.ActualDate)
+            .Take(count)
+            .ToArray();
     }
 
     private static void AddFederalHolidayIfSupported(

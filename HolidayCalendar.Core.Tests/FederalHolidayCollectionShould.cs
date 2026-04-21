@@ -67,4 +67,50 @@ public sealed class FederalHolidayCollectionShould
             holiday.ObservedDate == new DateTime(2021, 12, 31) &&
             holiday.IsObservedOnDifferentDate);
     }
+
+    [Fact]
+    public void ReturnUpcomingFederalHolidaysWithinTheSameYear()
+    {
+        var holidays = GetUpcomingFederalHolidays(new DateTime(2025, 6, 20), 3);
+
+        holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.IndependenceDay,
+            HolidayNames.LaborDay,
+            HolidayNames.ColumbusDay);
+    }
+
+    [Fact]
+    public void ReturnUpcomingFederalHolidaysAcrossYearBoundaries()
+    {
+        var holidays = GetUpcomingFederalHolidays(new DateTime(2025, 12, 26), 2);
+
+        holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.NewYearsDay,
+            HolidayNames.MartinLutherKingJrDay);
+        holidays[0].ActualDate.Should().Be(new DateTime(2026, 1, 1));
+        holidays[1].ActualDate.Should().Be(new DateTime(2026, 1, 19));
+    }
+
+    [Fact]
+    public void IncludeFederalHolidaysThatOccurOnTheStartingDate()
+    {
+        var holidays = GetUpcomingFederalHolidays(new DateTime(2025, 7, 4, 18, 0, 0), 1);
+
+        holidays.Should().ContainSingle();
+        holidays[0].Name.Should().Be(HolidayNames.IndependenceDay);
+        holidays[0].ActualDate.Should().Be(new DateTime(2025, 7, 4));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void RejectInvalidUpcomingFederalHolidayCount(int count)
+    {
+        var action = () => GetUpcomingFederalHolidays(new DateTime(2025, 1, 1), count);
+
+        action.Should()
+            .Throw<ArgumentOutOfRangeException>()
+            .Which.ParamName.Should()
+            .Be("count");
+    }
 }

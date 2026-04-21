@@ -81,4 +81,49 @@ public sealed class ReligiousHolidayCollectionShould
             .Which.ParamName.Should()
             .Be("year");
     }
+
+    [Fact]
+    public void ReturnUpcomingReligiousHolidaysWithinTheSameYear()
+    {
+        var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 4, 19), 2);
+
+        holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.EasterSunday,
+            HolidayNames.PentecostSunday);
+    }
+
+    [Fact]
+    public void ReturnUpcomingReligiousHolidaysAcrossYearBoundaries()
+    {
+        var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 6, 9), 2);
+
+        holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.GoodFriday,
+            HolidayNames.EasterSunday);
+        holidays[0].ActualDate.Should().Be(new DateTime(2026, 4, 3));
+        holidays[1].ActualDate.Should().Be(new DateTime(2026, 4, 5));
+    }
+
+    [Fact]
+    public void IncludeReligiousHolidaysThatOccurOnTheStartingDate()
+    {
+        var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 4, 20, 12, 0, 0), 1);
+
+        holidays.Should().ContainSingle();
+        holidays[0].Name.Should().Be(HolidayNames.EasterSunday);
+        holidays[0].ActualDate.Should().Be(new DateTime(2025, 4, 20));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void RejectInvalidUpcomingReligiousHolidayCount(int count)
+    {
+        var action = () => GetUpcomingReligiousHolidays(new DateTime(2025, 1, 1), count);
+
+        action.Should()
+            .Throw<ArgumentOutOfRangeException>()
+            .Which.ParamName.Should()
+            .Be("count");
+    }
 }

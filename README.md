@@ -67,6 +67,32 @@ Console.WriteLine(easter.ActualDate); // 4/20/2025
 Console.WriteLine(easter.Category);   // Religious
 ```
 
+### Get upcoming federal holidays
+
+```csharp
+using HolidayCalendar.Core;
+
+var upcoming = HolidayCalculator.GetUpcomingFederalHolidays(new DateTime(2025, 6, 20), 3);
+
+foreach (var holiday in upcoming)
+{
+    Console.WriteLine($"{holiday.Name}: {holiday.ActualDate:d}");
+}
+```
+
+### Get upcoming religious holidays
+
+```csharp
+using HolidayCalendar.Core;
+
+var upcoming = HolidayCalculator.GetUpcomingReligiousHolidays(new DateTime(2025, 4, 19), 2);
+
+foreach (var holiday in upcoming)
+{
+    Console.WriteLine($"{holiday.Name}: {holiday.ActualDate:d}");
+}
+```
+
 ### Work with observed dates
 
 ```csharp
