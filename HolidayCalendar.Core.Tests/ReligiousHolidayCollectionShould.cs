@@ -146,6 +146,18 @@ public sealed class ReligiousHolidayCollectionShould
     }
 
     [Fact]
+    public void ReturnUpcomingReligiousHolidaysByObservedDate()
+    {
+        var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 12, 24), 2, HolidayDateMode.ObservedDate);
+
+        holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.ChristmasEve,
+            HolidayNames.ChristmasDay);
+        holidays[0].ObservedDate.Should().Be(new DateTime(2025, 12, 24));
+        holidays[1].ObservedDate.Should().Be(new DateTime(2025, 12, 25));
+    }
+
+    [Fact]
     public void IncludeReligiousHolidaysThatOccurOnTheStartingDate()
     {
         var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 4, 20, 12, 0, 0), 1);
@@ -166,5 +178,16 @@ public sealed class ReligiousHolidayCollectionShould
             .Throw<ArgumentOutOfRangeException>()
             .Which.ParamName.Should()
             .Be("count");
+    }
+
+    [Fact]
+    public void RejectInvalidUpcomingReligiousHolidayDateMode()
+    {
+        var action = () => GetUpcomingReligiousHolidays(new DateTime(2025, 1, 1), 1, (HolidayDateMode)(-1));
+
+        action.Should()
+            .Throw<ArgumentOutOfRangeException>()
+            .Which.ParamName.Should()
+            .Be("dateMode");
     }
 }

@@ -92,6 +92,30 @@ public sealed class FederalHolidayCollectionShould
     }
 
     [Fact]
+    public void ReturnUpcomingFederalHolidaysByObservedDateAcrossYearBoundaries()
+    {
+        var holidays = GetUpcomingFederalHolidays(new DateTime(2021, 12, 25), 2, HolidayDateMode.ObservedDate);
+
+        holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.NewYearsDay,
+            HolidayNames.MartinLutherKingJrDay);
+        holidays[0].ActualDate.Should().Be(new DateTime(2022, 1, 1));
+        holidays[0].ObservedDate.Should().Be(new DateTime(2021, 12, 31));
+        holidays[1].ObservedDate.Should().Be(new DateTime(2022, 1, 17));
+    }
+
+    [Fact]
+    public void IncludeFederalHolidaysObservedOnTheStartingDate()
+    {
+        var holidays = GetUpcomingFederalHolidays(new DateTime(2021, 12, 31, 18, 0, 0), 1, HolidayDateMode.ObservedDate);
+
+        holidays.Should().ContainSingle();
+        holidays[0].Name.Should().Be(HolidayNames.NewYearsDay);
+        holidays[0].ActualDate.Should().Be(new DateTime(2022, 1, 1));
+        holidays[0].ObservedDate.Should().Be(new DateTime(2021, 12, 31));
+    }
+
+    [Fact]
     public void IncludeFederalHolidaysThatOccurOnTheStartingDate()
     {
         var holidays = GetUpcomingFederalHolidays(new DateTime(2025, 7, 4, 18, 0, 0), 1);
@@ -112,5 +136,16 @@ public sealed class FederalHolidayCollectionShould
             .Throw<ArgumentOutOfRangeException>()
             .Which.ParamName.Should()
             .Be("count");
+    }
+
+    [Fact]
+    public void RejectInvalidUpcomingFederalHolidayDateMode()
+    {
+        var action = () => GetUpcomingFederalHolidays(new DateTime(2025, 1, 1), 1, (HolidayDateMode)999);
+
+        action.Should()
+            .Throw<ArgumentOutOfRangeException>()
+            .Which.ParamName.Should()
+            .Be("dateMode");
     }
 }

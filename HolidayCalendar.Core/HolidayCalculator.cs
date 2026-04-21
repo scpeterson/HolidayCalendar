@@ -278,7 +278,20 @@ public static class HolidayCalculator
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="count"/> is less than 1.</exception>
     public static IReadOnlyList<Holiday> GetUpcomingFederalHolidays(DateTime fromDate, int count)
     {
-        return GetUpcomingHolidays(fromDate, count, GetFederalHolidays);
+        return GetUpcomingFederalHolidays(fromDate, count, HolidayDateMode.ActualDate);
+    }
+
+    /// <summary>
+    /// Gets the next federal holidays on or after the supplied date, ordered by the requested date mode.
+    /// </summary>
+    /// <param name="fromDate">The date from which upcoming holidays should be returned.</param>
+    /// <param name="count">The number of upcoming holidays to return.</param>
+    /// <param name="dateMode">Whether to evaluate upcoming holidays by actual or observed dates.</param>
+    /// <returns>An ordered list of upcoming federal holidays.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="count"/> is less than 1.</exception>
+    public static IReadOnlyList<Holiday> GetUpcomingFederalHolidays(DateTime fromDate, int count, HolidayDateMode dateMode)
+    {
+        return GetUpcomingHolidays(fromDate, count, GetFederalHolidays, dateMode);
     }
 
     /// <summary>
@@ -323,7 +336,20 @@ public static class HolidayCalculator
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="count"/> is less than 1.</exception>
     public static IReadOnlyList<Holiday> GetUpcomingReligiousHolidays(DateTime fromDate, int count)
     {
-        return GetUpcomingHolidays(fromDate, count, GetReligiousHolidays);
+        return GetUpcomingReligiousHolidays(fromDate, count, HolidayDateMode.ActualDate);
+    }
+
+    /// <summary>
+    /// Gets the next supported religious holidays on or after the supplied date, ordered by the requested date mode.
+    /// </summary>
+    /// <param name="fromDate">The date from which upcoming holidays should be returned.</param>
+    /// <param name="count">The number of upcoming holidays to return.</param>
+    /// <param name="dateMode">Whether to evaluate upcoming holidays by actual or observed dates.</param>
+    /// <returns>An ordered list of upcoming religious holidays.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="count"/> is less than 1.</exception>
+    public static IReadOnlyList<Holiday> GetUpcomingReligiousHolidays(DateTime fromDate, int count, HolidayDateMode dateMode)
+    {
+        return GetUpcomingHolidays(fromDate, count, GetReligiousHolidays, dateMode);
     }
 
     /// <summary>
@@ -744,31 +770,68 @@ public static class HolidayCalculator
     private static IReadOnlyList<Holiday> GetUpcomingHolidays(
         DateTime fromDate,
         int count,
-        Func<int, IReadOnlyList<Holiday>> holidayProvider)
+        Func<int, IReadOnlyList<Holiday>> holidayProvider,
+        HolidayDateMode dateMode)
     {
         if (count < 1)
         {
             throw new ArgumentOutOfRangeException(nameof(count), count, "Count must be greater than zero.");
         }
 
+        ValidateHolidayDateMode(dateMode);
+
         var upcomingHolidays = new List<Holiday>();
         var startDate = fromDate.Date;
+        var holidayDateSelector = GetHolidayDateSelector(dateMode);
         var year = startDate.Year;
+        var boundaryYear = startDate.Year;
 
         while (upcomingHolidays.Count < count)
         {
+            var thresholdDate = year <= boundaryYear
+                ? startDate
+                : new DateTime(year, 1, 1);
+
             upcomingHolidays.AddRange(
                 holidayProvider(year)
-                    .Where(holiday => holiday.ActualDate >= startDate));
+                    .Where(holiday => holidayDateSelector(holiday) >= thresholdDate));
+
+            if (dateMode == HolidayDateMode.ObservedDate && year == boundaryYear && year < DateTime.MaxValue.Year)
+            {
+                upcomingHolidays.AddRange(
+                    holidayProvider(year + 1)
+                        .Where(holiday =>
+                            holiday.ObservedDate < holiday.ActualDate &&
+                            holiday.ObservedDate >= startDate));
+            }
 
             year++;
-            startDate = new DateTime(year, 1, 1);
         }
 
         return upcomingHolidays
-            .OrderBy(holiday => holiday.ActualDate)
+            .OrderBy(holiday => holidayDateSelector(holiday))
+            .ThenBy(holiday => holiday.ActualDate)
+            .ThenBy(holiday => holiday.Name, StringComparer.Ordinal)
             .Take(count)
             .ToArray();
+    }
+
+    private static Func<Holiday, DateTime> GetHolidayDateSelector(HolidayDateMode dateMode)
+    {
+        return dateMode switch
+        {
+            HolidayDateMode.ActualDate => holiday => holiday.ActualDate,
+            HolidayDateMode.ObservedDate => holiday => holiday.ObservedDate,
+            _ => throw new ArgumentOutOfRangeException(nameof(dateMode), dateMode, "Unsupported holiday date mode.")
+        };
+    }
+
+    private static void ValidateHolidayDateMode(HolidayDateMode dateMode)
+    {
+        if (!Enum.IsDefined(dateMode))
+        {
+            throw new ArgumentOutOfRangeException(nameof(dateMode), dateMode, "Unsupported holiday date mode.");
+        }
     }
 
     private static void AddFederalHolidayIfSupported(

@@ -146,6 +146,22 @@ foreach (var holiday in upcoming)
 }
 ```
 
+### Get upcoming federal holidays by observed date
+
+```csharp
+using HolidayCalendar.Core;
+
+var upcoming = HolidayCalculator.GetUpcomingFederalHolidays(
+    new DateTime(2021, 12, 25),
+    2,
+    HolidayDateMode.ObservedDate);
+
+foreach (var holiday in upcoming)
+{
+    Console.WriteLine($"{holiday.Name}: actual={holiday.ActualDate:d}, observed={holiday.ObservedDate:d}");
+}
+```
+
 ### Get upcoming religious holidays
 
 ```csharp
@@ -158,6 +174,8 @@ foreach (var holiday in upcoming)
     Console.WriteLine($"{holiday.Name}: {holiday.ActualDate:d}");
 }
 ```
+
+The upcoming APIs default to `HolidayDateMode.ActualDate`. Pass `HolidayDateMode.ObservedDate` when you want the search window and ordering to follow observed federal dates instead.
 
 ### Work with observed dates
 
@@ -217,6 +235,12 @@ Build a local package with:
 
 ```bash
 dotnet pack HolidayCalendar.Core/HolidayCalendar.Core.csproj --configuration Release
+```
+
+Run the sample console app with:
+
+```bash
+dotnet run --project HolidayCalendar.Sample/HolidayCalendar.Sample.csproj
 ```
 
 GitHub Actions also runs restore, build, and tests on pushes and pull requests to `main`.
