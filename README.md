@@ -1,6 +1,6 @@
 # HolidayCalendar
 
-`HolidayCalendar` is a .NET library for calculating US federal holidays and selected religious holidays.
+`HolidayCalendar` is a .NET library for calculating US federal holidays and Easter-related dates.
 
 ## Features
 

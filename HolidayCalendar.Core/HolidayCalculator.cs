@@ -3,7 +3,7 @@
 namespace HolidayCalendar.Core;
 
 /// <summary>
-/// Provides reusable date rules and holiday calculations for federal and religious holidays.
+/// Provides reusable date rules and holiday calculations for United States federal holidays and Easter-related dates.
 /// </summary>
 public static class HolidayCalculator
 {
