@@ -17,6 +17,28 @@
 
 - `.NET 10`
 
+## Installation
+
+This package is not yet published to NuGet. For now, use one of these approaches:
+
+### Build a local package
+
+```bash
+dotnet pack HolidayCalendar.Core/HolidayCalendar.Core.csproj --configuration Release
+```
+
+The package will be created at:
+
+```text
+HolidayCalendar.Core/bin/Release/HolidayCalendar.0.1.0.nupkg
+```
+
+### Reference the project directly
+
+```xml
+<ProjectReference Include="..\HolidayCalendar.Core\HolidayCalendar.Core.csproj" />
+```
+
 ## Usage
 
 ### Get all federal holidays for a year
@@ -97,6 +119,18 @@ Both lookup APIs also support a small set of friendly aliases, for example:
 - `Ascension Thursday`
 - `Pentecost`
 
+### Alias lookup examples
+
+```csharp
+using HolidayCalendar.Core;
+
+var mlk = HolidayCalculator.GetFederalHoliday("MLK Day", 2025);
+var easter = HolidayCalculator.GetReligiousHoliday("Easter", 2025);
+
+Console.WriteLine(mlk.Name);    // Martin Luther King Jr. Day
+Console.WriteLine(easter.Name); // Easter Sunday
+```
+
 ### Get upcoming federal holidays
 
 ```csharp
@@ -135,6 +169,30 @@ Console.WriteLine(newYears.ObservedDate);            // 12/31/2021
 Console.WriteLine(newYears.IsObservedOnDifferentDate); // true
 ```
 
+### Historical federal holiday transitions
+
+The library models several historical US federal-holiday rule changes.
+
+```csharp
+using HolidayCalendar.Core;
+
+var presidents1970 = HolidayCalculator.GetFederalHoliday("Presidents Day", 1970);
+var presidents1971 = HolidayCalculator.GetFederalHoliday("Presidents Day", 1971);
+
+Console.WriteLine(presidents1970.ActualDate); // 2/22/1970
+Console.WriteLine(presidents1971.ActualDate); // 2/15/1971
+```
+
+```csharp
+using HolidayCalendar.Core;
+
+var veterans1975 = HolidayCalculator.GetFederalHoliday("Veterans Day", 1975);
+var veterans1978 = HolidayCalculator.GetFederalHoliday("Veterans Day", 1978);
+
+Console.WriteLine(veterans1975.ActualDate); // fourth Monday in October
+Console.WriteLine(veterans1978.ActualDate); // 11/11/1978
+```
+
 ## Holiday Model
 
 Each returned holiday contains:
@@ -153,6 +211,12 @@ Run the test suite locally with:
 dotnet test HolidayCalendar.sln
 ```
 
+Build a local package with:
+
+```bash
+dotnet pack HolidayCalendar.Core/HolidayCalendar.Core.csproj --configuration Release
+```
+
 GitHub Actions also runs restore, build, and tests on pushes and pull requests to `main`.
 
 ## Releases
@@ -160,3 +224,20 @@ GitHub Actions also runs restore, build, and tests on pushes and pull requests t
 - CI validates restore, build, test, and package creation on `main`
 - The release workflow builds a versioned package for tags like `v0.1.0`
 - Release notes are tracked in [CHANGELOG.md](CHANGELOG.md)
+
+### Tagging a release
+
+Create and push a semantic-version tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+That tag triggers the release workflow, which:
+
+- restores dependencies
+- builds the solution
+- runs the tests
+- creates a versioned `.nupkg`
+- attaches the package to a GitHub release
