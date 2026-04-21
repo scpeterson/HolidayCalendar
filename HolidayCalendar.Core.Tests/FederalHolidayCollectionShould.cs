@@ -13,17 +13,17 @@ public sealed class FederalHolidayCollectionShould
 
         holidays.Should().HaveCount(11);
         holidays.Select(holiday => holiday.Name).Should().Equal(
-            "New Year's Day",
-            "Martin Luther King Jr. Day",
-            "Presidents Day",
-            "Memorial Day",
-            "Juneteenth",
-            "Independence Day",
-            "Labor Day",
-            "Columbus Day",
-            "Veterans Day",
-            "Thanksgiving",
-            "Christmas Day");
+            HolidayNames.NewYearsDay,
+            HolidayNames.MartinLutherKingJrDay,
+            HolidayNames.PresidentsDay,
+            HolidayNames.MemorialDay,
+            HolidayNames.Juneteenth,
+            HolidayNames.IndependenceDay,
+            HolidayNames.LaborDay,
+            HolidayNames.ColumbusDay,
+            HolidayNames.VeteransDay,
+            HolidayNames.Thanksgiving,
+            HolidayNames.ChristmasDay);
         holidays.Select(holiday => holiday.ActualDate).Should().BeInAscendingOrder();
         holidays.Should().OnlyContain(holiday => holiday.Category == HolidayCategory.Federal);
     }
@@ -34,15 +34,15 @@ public sealed class FederalHolidayCollectionShould
         var holidays = GetFederalHolidays(1969);
 
         holidays.Select(holiday => holiday.Name).Should().Equal(
-            "New Year's Day",
-            "Presidents Day",
-            "Memorial Day",
-            "Independence Day",
-            "Labor Day",
-            "Columbus Day",
-            "Veterans Day",
-            "Thanksgiving",
-            "Christmas Day");
+            HolidayNames.NewYearsDay,
+            HolidayNames.PresidentsDay,
+            HolidayNames.MemorialDay,
+            HolidayNames.IndependenceDay,
+            HolidayNames.LaborDay,
+            HolidayNames.ColumbusDay,
+            HolidayNames.VeteransDay,
+            HolidayNames.Thanksgiving,
+            HolidayNames.ChristmasDay);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class FederalHolidayCollectionShould
         var holidays = GetFederalHolidays(1868);
 
         holidays.Should().ContainSingle();
-        holidays[0].Name.Should().Be("Memorial Day");
+        holidays[0].Name.Should().Be(HolidayNames.MemorialDay);
         holidays[0].ActualDate.Should().Be(new DateTime(1868, 5, 30));
         holidays[0].ObservedDate.Should().Be(new DateTime(1868, 5, 30));
     }
@@ -62,7 +62,7 @@ public sealed class FederalHolidayCollectionShould
         var holidays = GetFederalHolidays(2022);
 
         holidays.Should().ContainSingle(holiday =>
-            holiday.Name == "New Year's Day" &&
+            holiday.Name == HolidayNames.NewYearsDay &&
             holiday.ActualDate == new DateTime(2022, 1, 1) &&
             holiday.ObservedDate == new DateTime(2021, 12, 31) &&
             holiday.IsObservedOnDifferentDate);

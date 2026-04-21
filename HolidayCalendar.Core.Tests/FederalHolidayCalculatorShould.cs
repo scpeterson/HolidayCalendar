@@ -290,7 +290,7 @@ public sealed class FederalHolidayCalculatorShould
     {
         var holiday = GetFederalHoliday("christmas day", 2025);
 
-        holiday.Name.Should().Be("Christmas Day");
+        holiday.Name.Should().Be(HolidayNames.ChristmasDay);
         holiday.ActualDate.Should().Be(new DateTime(2025, 12, 25));
     }
 }

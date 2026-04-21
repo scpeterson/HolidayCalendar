@@ -13,18 +13,18 @@ public sealed class ReligiousHolidayCollectionShould
 
         holidays.Should().HaveCount(3);
         holidays.Select(holiday => holiday.Name).Should().Equal(
-            "Good Friday",
-            "Easter Sunday",
-            "Pentecost Sunday");
+            HolidayNames.GoodFriday,
+            HolidayNames.EasterSunday,
+            HolidayNames.PentecostSunday);
         holidays.Select(holiday => holiday.ActualDate).Should().BeInAscendingOrder();
         holidays.Should().OnlyContain(holiday => holiday.Category == HolidayCategory.Religious);
         holidays.Should().OnlyContain(holiday => !holiday.IsObservedOnDifferentDate);
     }
 
     [Theory]
-    [InlineData("Good Friday", 2025, 4, 18)]
-    [InlineData("Easter Sunday", 2025, 4, 20)]
-    [InlineData("Pentecost Sunday", 2025, 6, 8)]
+    [InlineData(HolidayNames.GoodFriday, 2025, 4, 18)]
+    [InlineData(HolidayNames.EasterSunday, 2025, 4, 20)]
+    [InlineData(HolidayNames.PentecostSunday, 2025, 6, 8)]
     public void FindReligiousHolidaysByName(string name, int year, int month, int day)
     {
         var holiday = GetReligiousHoliday(name, year);
@@ -40,7 +40,7 @@ public sealed class ReligiousHolidayCollectionShould
     {
         var holiday = GetReligiousHoliday("easter sunday", 2025);
 
-        holiday.Name.Should().Be("Easter Sunday");
+        holiday.Name.Should().Be(HolidayNames.EasterSunday);
         holiday.ActualDate.Should().Be(new DateTime(2025, 4, 20));
     }
 
