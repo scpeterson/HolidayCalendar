@@ -243,6 +243,8 @@ Run the sample console app with:
 dotnet run --project HolidayCalendar.Sample/HolidayCalendar.Sample.csproj
 ```
 
+The sample app prints upcoming federal and religious holidays relative to the current local date and time.
+
 GitHub Actions also runs restore, build, and tests on pushes and pull requests to `main`.
 
 ## Releases
