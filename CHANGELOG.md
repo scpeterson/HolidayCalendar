@@ -8,6 +8,8 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 - Added `HolidayDateMode` overloads for upcoming holiday queries so callers can search by actual or observed date.
 - Added a sample console application demonstrating lookup and upcoming holiday APIs.
+- Added non-throwing `TryGet...` holiday lookup APIs.
+- Added APIs to list supported holiday names and accepted lookup aliases.
 
 ## [0.1.0] - 2026-04-21
 

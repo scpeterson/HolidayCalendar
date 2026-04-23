@@ -1,4 +1,5 @@
-﻿using static HolidayCalendar.Core.Constants;
+﻿using System.Collections.ObjectModel;
+using static HolidayCalendar.Core.Constants;
 
 namespace HolidayCalendar.Core;
 
@@ -7,7 +8,42 @@ namespace HolidayCalendar.Core;
 /// </summary>
 public static class HolidayCalculator
 {
-    private static readonly IReadOnlyDictionary<string, string> FederalHolidayAliases =
+    private static readonly string[] SupportedFederalHolidayNames =
+    [
+        HolidayNames.NewYearsDay,
+        HolidayNames.MartinLutherKingJrDay,
+        HolidayNames.PresidentsDay,
+        HolidayNames.MemorialDay,
+        HolidayNames.Juneteenth,
+        HolidayNames.IndependenceDay,
+        HolidayNames.LaborDay,
+        HolidayNames.ColumbusDay,
+        HolidayNames.VeteransDay,
+        HolidayNames.Thanksgiving,
+        HolidayNames.ChristmasDay
+    ];
+
+    private static readonly string[] SupportedReligiousHolidayNames =
+    [
+        HolidayNames.Epiphany,
+        HolidayNames.AshWednesday,
+        HolidayNames.Annunciation,
+        HolidayNames.PalmSunday,
+        HolidayNames.MaundyThursday,
+        HolidayNames.GoodFriday,
+        HolidayNames.HolySaturday,
+        HolidayNames.EasterSunday,
+        HolidayNames.EasterMonday,
+        HolidayNames.AscensionDay,
+        HolidayNames.PentecostSunday,
+        HolidayNames.PentecostMonday,
+        HolidayNames.AllSaintsDay,
+        HolidayNames.AllSoulsDay,
+        HolidayNames.ChristmasEve,
+        HolidayNames.ChristmasDay
+    ];
+
+    private static readonly Dictionary<string, string> FederalHolidayAliases =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["New Years Day"] = HolidayNames.NewYearsDay,
@@ -18,7 +54,7 @@ public static class HolidayCalculator
             ["Christmas"] = HolidayNames.ChristmasDay
         };
 
-    private static readonly IReadOnlyDictionary<string, string> ReligiousHolidayAliases =
+    private static readonly Dictionary<string, string> ReligiousHolidayAliases =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["Easter"] = HolidayNames.EasterSunday,
@@ -29,6 +65,12 @@ public static class HolidayCalculator
             ["Christmas"] = HolidayNames.ChristmasDay,
             ["Xmas Eve"] = HolidayNames.ChristmasEve
         };
+
+    private static readonly IReadOnlyDictionary<string, string> ReadOnlyFederalHolidayAliases =
+        new ReadOnlyDictionary<string, string>(FederalHolidayAliases);
+
+    private static readonly IReadOnlyDictionary<string, string> ReadOnlyReligiousHolidayAliases =
+        new ReadOnlyDictionary<string, string>(ReligiousHolidayAliases);
 
     private static readonly IReadOnlyDictionary<string, Func<int, Holiday>> FederalHolidayFactories =
         new Dictionary<string, Func<int, Holiday>>(StringComparer.OrdinalIgnoreCase)
@@ -186,12 +228,7 @@ public static class HolidayCalculator
     public static Holiday GetFederalHoliday(string name, int year)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        var normalizedName = name.Trim();
-
-        if (FederalHolidayAliases.TryGetValue(normalizedName, out var canonicalName))
-        {
-            normalizedName = canonicalName;
-        }
+        var normalizedName = NormalizeHolidayName(name, FederalHolidayAliases);
 
         if (FederalHolidayFactories.TryGetValue(normalizedName, out var holidayFactory))
         {
@@ -214,12 +251,7 @@ public static class HolidayCalculator
     public static Holiday GetReligiousHoliday(string name, int year)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        var normalizedName = name.Trim();
-
-        if (ReligiousHolidayAliases.TryGetValue(normalizedName, out var canonicalName))
-        {
-            normalizedName = canonicalName;
-        }
+        var normalizedName = NormalizeHolidayName(name, ReligiousHolidayAliases);
 
         if (ReligiousHolidayFactories.TryGetValue(normalizedName, out var holidayFactory))
         {
@@ -229,6 +261,66 @@ public static class HolidayCalculator
         throw new ArgumentException(
             $"Religious holiday '{name}' is not supported.",
             nameof(name));
+    }
+
+    /// <summary>
+    /// Attempts to get a single federal holiday for the supplied year without throwing for unsupported names or years.
+    /// </summary>
+    /// <param name="name">The holiday name to resolve. Matching is case-insensitive.</param>
+    /// <param name="year">The year for which the holiday should be calculated.</param>
+    /// <param name="holiday">When this method returns, contains the resolved holiday if successful; otherwise <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> when a supported holiday can be resolved for the supplied year; otherwise <see langword="false"/>.</returns>
+    public static bool TryGetFederalHoliday(string name, int year, out Holiday? holiday)
+    {
+        return TryGetHoliday(name, year, FederalHolidayAliases, FederalHolidayFactories, out holiday);
+    }
+
+    /// <summary>
+    /// Attempts to get a single supported religious holiday for the supplied year without throwing for unsupported names or years.
+    /// </summary>
+    /// <param name="name">The holiday name to resolve. Matching is case-insensitive.</param>
+    /// <param name="year">The year for which the holiday should be calculated.</param>
+    /// <param name="holiday">When this method returns, contains the resolved holiday if successful; otherwise <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> when a supported holiday can be resolved for the supplied year; otherwise <see langword="false"/>.</returns>
+    public static bool TryGetReligiousHoliday(string name, int year, out Holiday? holiday)
+    {
+        return TryGetHoliday(name, year, ReligiousHolidayAliases, ReligiousHolidayFactories, out holiday);
+    }
+
+    /// <summary>
+    /// Gets the canonical names accepted by the federal holiday APIs.
+    /// </summary>
+    /// <returns>An ordered list of supported federal holiday names.</returns>
+    public static IReadOnlyList<string> GetSupportedFederalHolidayNames()
+    {
+        return SupportedFederalHolidayNames;
+    }
+
+    /// <summary>
+    /// Gets the canonical names accepted by the religious holiday APIs.
+    /// </summary>
+    /// <returns>An ordered list of supported religious holiday names.</returns>
+    public static IReadOnlyList<string> GetSupportedReligiousHolidayNames()
+    {
+        return SupportedReligiousHolidayNames;
+    }
+
+    /// <summary>
+    /// Gets the friendly aliases accepted by the federal holiday lookup APIs.
+    /// </summary>
+    /// <returns>A read-only alias map keyed by accepted alias name.</returns>
+    public static IReadOnlyDictionary<string, string> GetFederalHolidayAliases()
+    {
+        return ReadOnlyFederalHolidayAliases;
+    }
+
+    /// <summary>
+    /// Gets the friendly aliases accepted by the religious holiday lookup APIs.
+    /// </summary>
+    /// <returns>A read-only alias map keyed by accepted alias name.</returns>
+    public static IReadOnlyDictionary<string, string> GetReligiousHolidayAliases()
+    {
+        return ReadOnlyReligiousHolidayAliases;
     }
 
     /// <summary>
@@ -302,25 +394,9 @@ public static class HolidayCalculator
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="year"/> is outside the supported Gregorian range.</exception>
     public static IReadOnlyList<Holiday> GetReligiousHolidays(int year)
     {
-        Holiday[] holidays =
-        [
-            GetReligiousHoliday(HolidayNames.Epiphany, year),
-            GetReligiousHoliday(HolidayNames.AshWednesday, year),
-            GetReligiousHoliday(HolidayNames.Annunciation, year),
-            GetReligiousHoliday(HolidayNames.PalmSunday, year),
-            GetReligiousHoliday(HolidayNames.MaundyThursday, year),
-            GetReligiousHoliday(HolidayNames.GoodFriday, year),
-            GetReligiousHoliday(HolidayNames.HolySaturday, year),
-            GetReligiousHoliday(HolidayNames.EasterSunday, year),
-            GetReligiousHoliday(HolidayNames.EasterMonday, year),
-            GetReligiousHoliday(HolidayNames.AscensionDay, year),
-            GetReligiousHoliday(HolidayNames.PentecostSunday, year),
-            GetReligiousHoliday(HolidayNames.PentecostMonday, year),
-            GetReligiousHoliday(HolidayNames.AllSaintsDay, year),
-            GetReligiousHoliday(HolidayNames.AllSoulsDay, year),
-            GetReligiousHoliday(HolidayNames.ChristmasEve, year),
-            GetReligiousHoliday(HolidayNames.ChristmasDay, year)
-        ];
+        var holidays = SupportedReligiousHolidayNames
+            .Select(name => GetReligiousHoliday(name, year))
+            .ToArray();
 
         return holidays
             .OrderBy(holiday => holiday.ActualDate)
@@ -764,6 +840,52 @@ public static class HolidayCalculator
         {
             throw new ArgumentOutOfRangeException(nameof(year), year,
                 $"{holidayName} is only supported for federal holiday calculations in {firstSupportedYear} and later.");
+        }
+    }
+
+    private static string NormalizeHolidayName(string name, IReadOnlyDictionary<string, string> aliases)
+    {
+        var normalizedName = name.Trim();
+
+        if (aliases.TryGetValue(normalizedName, out var canonicalName))
+        {
+            return canonicalName;
+        }
+
+        return normalizedName;
+    }
+
+    private static bool TryGetHoliday(
+        string name,
+        int year,
+        IReadOnlyDictionary<string, string> aliases,
+        IReadOnlyDictionary<string, Func<int, Holiday>> holidayFactories,
+        out Holiday? holiday)
+    {
+        holiday = null;
+
+        if (string.IsNullOrWhiteSpace(name) ||
+            year < DateTime.MinValue.Year ||
+            year > DateTime.MaxValue.Year)
+        {
+            return false;
+        }
+
+        var normalizedName = NormalizeHolidayName(name, aliases);
+
+        if (!holidayFactories.TryGetValue(normalizedName, out var holidayFactory))
+        {
+            return false;
+        }
+
+        try
+        {
+            holiday = holidayFactory(year);
+            return true;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
         }
     }
 

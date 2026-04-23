@@ -7,6 +7,46 @@ namespace HolidayCalendar.Core.Tests;
 public sealed class ReligiousHolidayCollectionShould
 {
     [Fact]
+    public void ReturnSupportedReligiousHolidayNames()
+    {
+        var names = GetSupportedReligiousHolidayNames();
+
+        names.Should().Equal(
+            HolidayNames.Epiphany,
+            HolidayNames.AshWednesday,
+            HolidayNames.Annunciation,
+            HolidayNames.PalmSunday,
+            HolidayNames.MaundyThursday,
+            HolidayNames.GoodFriday,
+            HolidayNames.HolySaturday,
+            HolidayNames.EasterSunday,
+            HolidayNames.EasterMonday,
+            HolidayNames.AscensionDay,
+            HolidayNames.PentecostSunday,
+            HolidayNames.PentecostMonday,
+            HolidayNames.AllSaintsDay,
+            HolidayNames.AllSoulsDay,
+            HolidayNames.ChristmasEve,
+            HolidayNames.ChristmasDay);
+    }
+
+    [Fact]
+    public void ReturnSupportedReligiousHolidayAliases()
+    {
+        var aliases = GetReligiousHolidayAliases();
+
+        aliases.Should().Contain([
+            new KeyValuePair<string, string>("Easter", HolidayNames.EasterSunday),
+            new KeyValuePair<string, string>("Holy Thursday", HolidayNames.MaundyThursday),
+            new KeyValuePair<string, string>("Ascension Thursday", HolidayNames.AscensionDay),
+            new KeyValuePair<string, string>("Pentecost", HolidayNames.PentecostSunday),
+            new KeyValuePair<string, string>("All Hallows' Day", HolidayNames.AllSaintsDay),
+            new KeyValuePair<string, string>("Christmas", HolidayNames.ChristmasDay),
+            new KeyValuePair<string, string>("Xmas Eve", HolidayNames.ChristmasEve)
+        ]);
+    }
+
+    [Fact]
     public void ReturnOrderedReligiousHolidaysForAYear()
     {
         var holidays = GetReligiousHolidays(2025);
@@ -70,6 +110,28 @@ public sealed class ReligiousHolidayCollectionShould
         holiday.ActualDate.Should().Be(new DateTime(2025, 4, 20));
     }
 
+    [Fact]
+    public void TryFindReligiousHolidayByName()
+    {
+        var result = TryGetReligiousHoliday(HolidayNames.EasterSunday, 2025, out var holiday);
+
+        result.Should().BeTrue();
+        holiday.Should().NotBeNull();
+        holiday!.Name.Should().Be(HolidayNames.EasterSunday);
+        holiday.ActualDate.Should().Be(new DateTime(2025, 4, 20));
+    }
+
+    [Fact]
+    public void TryFindReligiousHolidayByAlias()
+    {
+        var result = TryGetReligiousHoliday("Easter", 2025, out var holiday);
+
+        result.Should().BeTrue();
+        holiday.Should().NotBeNull();
+        holiday!.Name.Should().Be(HolidayNames.EasterSunday);
+        holiday.ActualDate.Should().Be(new DateTime(2025, 4, 20));
+    }
+
     [Theory]
     [InlineData("Easter", HolidayNames.EasterSunday, 2025, 4, 20)]
     [InlineData("Holy Thursday", HolidayNames.MaundyThursday, 2025, 4, 17)]
@@ -99,6 +161,18 @@ public sealed class ReligiousHolidayCollectionShould
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
+    [InlineData("Corpus Christi")]
+    public void ReturnFalseForUnknownOrBlankReligiousHolidayNames(string name)
+    {
+        var result = TryGetReligiousHoliday(name, 2025, out var holiday);
+
+        result.Should().BeFalse();
+        holiday.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
     public void RejectBlankReligiousHolidayNames(string name)
     {
         var action = () => GetReligiousHoliday(name, 2025);
@@ -121,6 +195,18 @@ public sealed class ReligiousHolidayCollectionShould
             .Throw<ArgumentOutOfRangeException>()
             .Which.ParamName.Should()
             .Be("year");
+    }
+
+    [Theory]
+    [InlineData(HolidayNames.EasterSunday, 1582)]
+    [InlineData(HolidayNames.EasterSunday, 0)]
+    [InlineData(HolidayNames.EasterSunday, -1)]
+    public void ReturnFalseForUnsupportedReligiousHolidayYears(string name, int year)
+    {
+        var result = TryGetReligiousHoliday(name, year, out var holiday);
+
+        result.Should().BeFalse();
+        holiday.Should().BeNull();
     }
 
     [Fact]

@@ -9,8 +9,10 @@
 - Federal holiday support with historical transitions
 - Observed holiday date handling
 - Single-holiday lookup by name
+- Non-throwing lookup APIs
 - Full federal holiday list for a year
 - Religious holiday list and lookup support
+- Supported-name and alias discovery APIs
 - Easter-derived religious holiday calculations
 
 ## Target Framework
@@ -121,6 +123,18 @@ Both lookup APIs also support a small set of friendly aliases, for example:
 - `All Hallows' Day`
 - `Christmas`
 
+You can also inspect the supported canonical names and aliases directly:
+
+```csharp
+using HolidayCalendar.Core;
+
+var federalNames = HolidayCalculator.GetSupportedFederalHolidayNames();
+var religiousAliases = HolidayCalculator.GetReligiousHolidayAliases();
+
+Console.WriteLine(string.Join(", ", federalNames));
+Console.WriteLine(religiousAliases["Easter"]); // Easter Sunday
+```
+
 ### Alias lookup examples
 
 ```csharp
@@ -131,6 +145,22 @@ var easter = HolidayCalculator.GetReligiousHoliday("Easter", 2025);
 
 Console.WriteLine(mlk.Name);    // Martin Luther King Jr. Day
 Console.WriteLine(easter.Name); // Easter Sunday
+```
+
+### Try lookup examples
+
+```csharp
+using HolidayCalendar.Core;
+
+if (HolidayCalculator.TryGetFederalHoliday("MLK Day", 2025, out var holiday))
+{
+    Console.WriteLine($"{holiday.Name}: {holiday.ActualDate:d}");
+}
+
+if (!HolidayCalculator.TryGetReligiousHoliday("Corpus Christi", 2025, out _))
+{
+    Console.WriteLine("Holiday is not supported.");
+}
 ```
 
 ### Get upcoming federal holidays
