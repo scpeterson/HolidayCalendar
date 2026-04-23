@@ -6,6 +6,11 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-23
+
+- Added a dedicated `HolidayAliases` catalog with grouped federal and religious alias collections.
+- Updated holiday lookup internals and tests to use shared alias catalogs and holiday-name constants consistently.
+
 ## [0.2.0] - 2026-04-23
 
 - Added `HolidayDateMode` overloads for upcoming holiday queries so callers can search by actual or observed date.
