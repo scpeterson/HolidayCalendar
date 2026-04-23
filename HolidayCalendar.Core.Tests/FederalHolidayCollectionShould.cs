@@ -117,6 +117,17 @@ public sealed class FederalHolidayCollectionShould
         holiday.ActualDate.Should().Be(new DateTime(2025, 1, 20));
     }
 
+    [Fact]
+    public void TryFindFederalHolidayByAliasCaseInsensitively()
+    {
+        var result = TryGetFederalHoliday("mlk day", 2025, out var holiday);
+
+        result.Should().BeTrue();
+        holiday.Should().NotBeNull();
+        holiday!.Name.Should().Be(HolidayNames.MartinLutherKingJrDay);
+        holiday.ActualDate.Should().Be(new DateTime(2025, 1, 20));
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -175,6 +186,19 @@ public sealed class FederalHolidayCollectionShould
         holidays[0].ActualDate.Should().Be(new DateTime(2022, 1, 1));
         holidays[0].ObservedDate.Should().Be(new DateTime(2021, 12, 31));
         holidays[1].ObservedDate.Should().Be(new DateTime(2022, 1, 17));
+    }
+
+    [Fact]
+    public void ReturnObservedCarryoverHolidaysWithoutDuplicates()
+    {
+        var holidays = GetUpcomingFederalHolidays(new DateTime(2021, 12, 25), 3, HolidayDateMode.ObservedDate);
+
+        holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.NewYearsDay,
+            HolidayNames.MartinLutherKingJrDay,
+            HolidayNames.PresidentsDay);
+        holidays.Select(holiday => holiday.ObservedDate).Should().BeInAscendingOrder();
+        holidays.Count(holiday => holiday.Name == HolidayNames.NewYearsDay).Should().Be(1);
     }
 
     [Fact]

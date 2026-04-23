@@ -124,6 +124,17 @@ public sealed class ReligiousHolidayCollectionShould
         holiday.ActualDate.Should().Be(new DateTime(2025, 4, 20));
     }
 
+    [Fact]
+    public void TryFindReligiousHolidayByAliasCaseInsensitively()
+    {
+        var result = TryGetReligiousHoliday("easter", 2025, out var holiday);
+
+        result.Should().BeTrue();
+        holiday.Should().NotBeNull();
+        holiday!.Name.Should().Be(HolidayNames.EasterSunday);
+        holiday.ActualDate.Should().Be(new DateTime(2025, 4, 20));
+    }
+
     [Theory]
     [InlineData("Easter", HolidayNames.EasterSunday, 2025, 4, 20)]
     [InlineData("Holy Thursday", HolidayNames.MaundyThursday, 2025, 4, 17)]
@@ -233,6 +244,19 @@ public sealed class ReligiousHolidayCollectionShould
             HolidayNames.ChristmasDay);
         holidays[0].ObservedDate.Should().Be(new DateTime(2025, 12, 24));
         holidays[1].ObservedDate.Should().Be(new DateTime(2025, 12, 25));
+    }
+
+    [Fact]
+    public void ReturnUpcomingReligiousHolidaysOrderedByObservedDate()
+    {
+        var holidays = GetUpcomingReligiousHolidays(new DateTime(2025, 4, 19), 4, HolidayDateMode.ObservedDate);
+
+        holidays.Select(holiday => holiday.Name).Should().Equal(
+            HolidayNames.HolySaturday,
+            HolidayNames.EasterSunday,
+            HolidayNames.EasterMonday,
+            HolidayNames.AscensionDay);
+        holidays.Select(holiday => holiday.ObservedDate).Should().BeInAscendingOrder();
     }
 
     [Fact]

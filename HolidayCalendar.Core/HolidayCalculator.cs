@@ -7,185 +7,54 @@ namespace HolidayCalendar.Core;
 /// </summary>
 public static class HolidayCalculator
 {
-    private static readonly string[] SupportedFederalHolidayNames =
+    private static readonly HolidayDefinition[] FederalHolidayDefinitions =
     [
-        HolidayNames.NewYearsDay,
-        HolidayNames.MartinLutherKingJrDay,
-        HolidayNames.PresidentsDay,
-        HolidayNames.MemorialDay,
-        HolidayNames.Juneteenth,
-        HolidayNames.IndependenceDay,
-        HolidayNames.LaborDay,
-        HolidayNames.ColumbusDay,
-        HolidayNames.VeteransDay,
-        HolidayNames.Thanksgiving,
-        HolidayNames.ChristmasDay
+        new(HolidayNames.NewYearsDay, FederalNewYearsDayStartYear, CalculateNewYearsDay, CalculateObservedNewYearsDay, HolidayCategory.Federal),
+        new(HolidayNames.MartinLutherKingJrDay, FederalMartinLutherKingJrDayStartYear, CalculateMartinLutherKingJrDay, CalculateMartinLutherKingJrDay, HolidayCategory.Federal),
+        new(HolidayNames.PresidentsDay, FederalPresidentsDayStartYear, CalculatePresidentsDay, CalculatePresidentsDay, HolidayCategory.Federal),
+        new(HolidayNames.MemorialDay, HistoricalMemorialDayStartYear, CalculateMemorialDay, CalculateMemorialDay, HolidayCategory.Federal),
+        new(HolidayNames.Juneteenth, FederalJuneteenthStartYear, CalculateJuneteenth, CalculateObservedJuneteenth, HolidayCategory.Federal),
+        new(HolidayNames.IndependenceDay, FederalIndependenceDayStartYear, CalculateIndependenceDay, CalculateObservedIndependenceDay, HolidayCategory.Federal),
+        new(HolidayNames.LaborDay, FederalLaborDayStartYear, CalculateLaborDay, CalculateLaborDay, HolidayCategory.Federal),
+        new(HolidayNames.ColumbusDay, FederalColumbusDayStartYear, CalculateColumbusDay, CalculateColumbusDay, HolidayCategory.Federal),
+        new(HolidayNames.VeteransDay, FederalVeteransDayStartYear, CalculateVeteransDay, CalculateObservedVeteransDay, HolidayCategory.Federal),
+        new(HolidayNames.Thanksgiving, FederalThanksgivingStartYear, CalculateThanksgiving, CalculateThanksgiving, HolidayCategory.Federal),
+        new(HolidayNames.ChristmasDay, FederalChristmasDayStartYear, CalculateChristmasDay, CalculateObservedChristmasDay, HolidayCategory.Federal)
     ];
 
-    private static readonly string[] SupportedReligiousHolidayNames =
+    private static readonly HolidayDefinition[] ReligiousHolidayDefinitions =
     [
-        HolidayNames.Epiphany,
-        HolidayNames.AshWednesday,
-        HolidayNames.Annunciation,
-        HolidayNames.PalmSunday,
-        HolidayNames.MaundyThursday,
-        HolidayNames.GoodFriday,
-        HolidayNames.HolySaturday,
-        HolidayNames.EasterSunday,
-        HolidayNames.EasterMonday,
-        HolidayNames.AscensionDay,
-        HolidayNames.PentecostSunday,
-        HolidayNames.PentecostMonday,
-        HolidayNames.AllSaintsDay,
-        HolidayNames.AllSoulsDay,
-        HolidayNames.ChristmasEve,
-        HolidayNames.ChristmasDay
+        new(HolidayNames.Epiphany, MinGregorianYear, CalculateEpiphany, CalculateEpiphany, HolidayCategory.Religious),
+        new(HolidayNames.AshWednesday, MinGregorianYear, CalculateAshWednesday, CalculateAshWednesday, HolidayCategory.Religious),
+        new(HolidayNames.Annunciation, MinGregorianYear, CalculateAnnunciation, CalculateAnnunciation, HolidayCategory.Religious),
+        new(HolidayNames.PalmSunday, MinGregorianYear, CalculatePalmSunday, CalculatePalmSunday, HolidayCategory.Religious),
+        new(HolidayNames.MaundyThursday, MinGregorianYear, CalculateMaundyThursday, CalculateMaundyThursday, HolidayCategory.Religious),
+        new(HolidayNames.GoodFriday, MinGregorianYear, CalculateGoodFriday, CalculateGoodFriday, HolidayCategory.Religious),
+        new(HolidayNames.HolySaturday, MinGregorianYear, CalculateHolySaturday, CalculateHolySaturday, HolidayCategory.Religious),
+        new(HolidayNames.EasterSunday, MinGregorianYear, CalculateEasterSunday, CalculateEasterSunday, HolidayCategory.Religious),
+        new(HolidayNames.EasterMonday, MinGregorianYear, CalculateEasterMonday, CalculateEasterMonday, HolidayCategory.Religious),
+        new(HolidayNames.AscensionDay, MinGregorianYear, CalculateAscensionDay, CalculateAscensionDay, HolidayCategory.Religious),
+        new(HolidayNames.PentecostSunday, MinGregorianYear, CalculatePentecostSunday, CalculatePentecostSunday, HolidayCategory.Religious),
+        new(HolidayNames.PentecostMonday, MinGregorianYear, CalculatePentecostMonday, CalculatePentecostMonday, HolidayCategory.Religious),
+        new(HolidayNames.AllSaintsDay, MinGregorianYear, CalculateAllSaintsDay, CalculateAllSaintsDay, HolidayCategory.Religious),
+        new(HolidayNames.AllSoulsDay, MinGregorianYear, CalculateAllSoulsDay, CalculateAllSoulsDay, HolidayCategory.Religious),
+        new(HolidayNames.ChristmasEve, MinGregorianYear, CalculateChristmasEve, CalculateChristmasEve, HolidayCategory.Religious),
+        new(HolidayNames.ChristmasDay, MinGregorianYear, CalculateChristmasDay, CalculateChristmasDay, HolidayCategory.Religious)
     ];
 
-    private static readonly IReadOnlyDictionary<string, Func<int, Holiday>> FederalHolidayFactories =
-        new Dictionary<string, Func<int, Holiday>>(StringComparer.OrdinalIgnoreCase)
-        {
-            [HolidayNames.NewYearsDay] = year => new Holiday(
-                HolidayNames.NewYearsDay,
-                CalculateNewYearsDay(year),
-                CalculateObservedNewYearsDay(year),
-                HolidayCategory.Federal),
-            [HolidayNames.MartinLutherKingJrDay] = year => new Holiday(
-                HolidayNames.MartinLutherKingJrDay,
-                CalculateMartinLutherKingJrDay(year),
-                CalculateMartinLutherKingJrDay(year),
-                HolidayCategory.Federal),
-            [HolidayNames.PresidentsDay] = year => new Holiday(
-                HolidayNames.PresidentsDay,
-                CalculatePresidentsDay(year),
-                CalculatePresidentsDay(year),
-                HolidayCategory.Federal),
-            [HolidayNames.MemorialDay] = year => new Holiday(
-                HolidayNames.MemorialDay,
-                CalculateMemorialDay(year),
-                CalculateMemorialDay(year),
-                HolidayCategory.Federal),
-            [HolidayNames.Juneteenth] = year => new Holiday(
-                HolidayNames.Juneteenth,
-                CalculateJuneteenth(year),
-                CalculateObservedJuneteenth(year),
-                HolidayCategory.Federal),
-            [HolidayNames.IndependenceDay] = year => new Holiday(
-                HolidayNames.IndependenceDay,
-                CalculateIndependenceDay(year),
-                CalculateObservedIndependenceDay(year),
-                HolidayCategory.Federal),
-            [HolidayNames.LaborDay] = year => new Holiday(
-                HolidayNames.LaborDay,
-                CalculateLaborDay(year),
-                CalculateLaborDay(year),
-                HolidayCategory.Federal),
-            [HolidayNames.ColumbusDay] = year => new Holiday(
-                HolidayNames.ColumbusDay,
-                CalculateColumbusDay(year),
-                CalculateColumbusDay(year),
-                HolidayCategory.Federal),
-            [HolidayNames.VeteransDay] = year => new Holiday(
-                HolidayNames.VeteransDay,
-                CalculateVeteransDay(year),
-                CalculateObservedVeteransDay(year),
-                HolidayCategory.Federal),
-            [HolidayNames.Thanksgiving] = year => new Holiday(
-                HolidayNames.Thanksgiving,
-                CalculateThanksgiving(year),
-                CalculateThanksgiving(year),
-                HolidayCategory.Federal),
-            [HolidayNames.ChristmasDay] = year => new Holiday(
-                HolidayNames.ChristmasDay,
-                CalculateChristmasDay(year),
-                CalculateObservedChristmasDay(year),
-                HolidayCategory.Federal)
-        };
+    private static readonly string[] SupportedFederalHolidayNames = FederalHolidayDefinitions
+        .Select(definition => definition.Name)
+        .ToArray();
 
-    private static readonly IReadOnlyDictionary<string, Func<int, Holiday>> ReligiousHolidayFactories =
-        new Dictionary<string, Func<int, Holiday>>(StringComparer.OrdinalIgnoreCase)
-        {
-            [HolidayNames.Epiphany] = year => new Holiday(
-                HolidayNames.Epiphany,
-                CalculateEpiphany(year),
-                CalculateEpiphany(year),
-                HolidayCategory.Religious),
-            [HolidayNames.AshWednesday] = year => new Holiday(
-                HolidayNames.AshWednesday,
-                CalculateAshWednesday(year),
-                CalculateAshWednesday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.Annunciation] = year => new Holiday(
-                HolidayNames.Annunciation,
-                CalculateAnnunciation(year),
-                CalculateAnnunciation(year),
-                HolidayCategory.Religious),
-            [HolidayNames.PalmSunday] = year => new Holiday(
-                HolidayNames.PalmSunday,
-                CalculatePalmSunday(year),
-                CalculatePalmSunday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.MaundyThursday] = year => new Holiday(
-                HolidayNames.MaundyThursday,
-                CalculateMaundyThursday(year),
-                CalculateMaundyThursday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.GoodFriday] = year => new Holiday(
-                HolidayNames.GoodFriday,
-                CalculateGoodFriday(year),
-                CalculateGoodFriday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.HolySaturday] = year => new Holiday(
-                HolidayNames.HolySaturday,
-                CalculateHolySaturday(year),
-                CalculateHolySaturday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.EasterSunday] = year => new Holiday(
-                HolidayNames.EasterSunday,
-                CalculateEasterSunday(year),
-                CalculateEasterSunday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.EasterMonday] = year => new Holiday(
-                HolidayNames.EasterMonday,
-                CalculateEasterMonday(year),
-                CalculateEasterMonday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.AscensionDay] = year => new Holiday(
-                HolidayNames.AscensionDay,
-                CalculateAscensionDay(year),
-                CalculateAscensionDay(year),
-                HolidayCategory.Religious),
-            [HolidayNames.PentecostSunday] = year => new Holiday(
-                HolidayNames.PentecostSunday,
-                CalculatePentecostSunday(year),
-                CalculatePentecostSunday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.PentecostMonday] = year => new Holiday(
-                HolidayNames.PentecostMonday,
-                CalculatePentecostMonday(year),
-                CalculatePentecostMonday(year),
-                HolidayCategory.Religious),
-            [HolidayNames.AllSaintsDay] = year => new Holiday(
-                HolidayNames.AllSaintsDay,
-                CalculateAllSaintsDay(year),
-                CalculateAllSaintsDay(year),
-                HolidayCategory.Religious),
-            [HolidayNames.AllSoulsDay] = year => new Holiday(
-                HolidayNames.AllSoulsDay,
-                CalculateAllSoulsDay(year),
-                CalculateAllSoulsDay(year),
-                HolidayCategory.Religious),
-            [HolidayNames.ChristmasEve] = year => new Holiday(
-                HolidayNames.ChristmasEve,
-                CalculateChristmasEve(year),
-                CalculateChristmasEve(year),
-                HolidayCategory.Religious),
-            [HolidayNames.ChristmasDay] = year => new Holiday(
-                HolidayNames.ChristmasDay,
-                CalculateChristmasDay(year),
-                CalculateChristmasDay(year),
-                HolidayCategory.Religious)
-        };
+    private static readonly string[] SupportedReligiousHolidayNames = ReligiousHolidayDefinitions
+        .Select(definition => definition.Name)
+        .ToArray();
+
+    private static readonly IReadOnlyDictionary<string, HolidayDefinition> FederalHolidayDefinitionsByName =
+        FederalHolidayDefinitions.ToDictionary(definition => definition.Name, StringComparer.OrdinalIgnoreCase);
+
+    private static readonly IReadOnlyDictionary<string, HolidayDefinition> ReligiousHolidayDefinitionsByName =
+        ReligiousHolidayDefinitions.ToDictionary(definition => definition.Name, StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
     /// Gets a single federal holiday for the supplied year.
@@ -200,9 +69,9 @@ public static class HolidayCalculator
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         var normalizedName = NormalizeHolidayName(name, HolidayAliases.Federal);
 
-        if (FederalHolidayFactories.TryGetValue(normalizedName, out var holidayFactory))
+        if (FederalHolidayDefinitionsByName.TryGetValue(normalizedName, out var definition))
         {
-            return holidayFactory(year);
+            return definition.Create(year);
         }
 
         throw new ArgumentException(
@@ -223,9 +92,9 @@ public static class HolidayCalculator
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         var normalizedName = NormalizeHolidayName(name, HolidayAliases.Religious);
 
-        if (ReligiousHolidayFactories.TryGetValue(normalizedName, out var holidayFactory))
+        if (ReligiousHolidayDefinitionsByName.TryGetValue(normalizedName, out var definition))
         {
-            return holidayFactory(year);
+            return definition.Create(year);
         }
 
         throw new ArgumentException(
@@ -242,7 +111,7 @@ public static class HolidayCalculator
     /// <returns><see langword="true"/> when a supported holiday can be resolved for the supplied year; otherwise <see langword="false"/>.</returns>
     public static bool TryGetFederalHoliday(string name, int year, out Holiday? holiday)
     {
-        return TryGetHoliday(name, year, HolidayAliases.Federal, FederalHolidayFactories, out holiday);
+        return TryGetHoliday(name, year, HolidayAliases.Federal, FederalHolidayDefinitionsByName, out holiday);
     }
 
     /// <summary>
@@ -254,7 +123,7 @@ public static class HolidayCalculator
     /// <returns><see langword="true"/> when a supported holiday can be resolved for the supplied year; otherwise <see langword="false"/>.</returns>
     public static bool TryGetReligiousHoliday(string name, int year, out Holiday? holiday)
     {
-        return TryGetHoliday(name, year, HolidayAliases.Religious, ReligiousHolidayFactories, out holiday);
+        return TryGetHoliday(name, year, HolidayAliases.Religious, ReligiousHolidayDefinitionsByName, out holiday);
     }
 
     /// <summary>
@@ -303,32 +172,10 @@ public static class HolidayCalculator
     {
         ValidateDateYear(year);
 
-        var holidays = new List<Holiday>();
-
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.NewYearsDay, FederalNewYearsDayStartYear,
-            CalculateNewYearsDay, CalculateObservedNewYearsDay);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.MartinLutherKingJrDay, FederalMartinLutherKingJrDayStartYear,
-            CalculateMartinLutherKingJrDay, CalculateMartinLutherKingJrDay);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.PresidentsDay, FederalPresidentsDayStartYear,
-            CalculatePresidentsDay, CalculatePresidentsDay);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.MemorialDay, HistoricalMemorialDayStartYear,
-            CalculateMemorialDay, CalculateMemorialDay);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.Juneteenth, FederalJuneteenthStartYear,
-            CalculateJuneteenth, CalculateObservedJuneteenth);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.IndependenceDay, FederalIndependenceDayStartYear,
-            CalculateIndependenceDay, CalculateObservedIndependenceDay);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.LaborDay, FederalLaborDayStartYear,
-            CalculateLaborDay, CalculateLaborDay);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.ColumbusDay, FederalColumbusDayStartYear,
-            CalculateColumbusDay, CalculateColumbusDay);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.VeteransDay, FederalVeteransDayStartYear,
-            CalculateVeteransDay, CalculateObservedVeteransDay);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.Thanksgiving, FederalThanksgivingStartYear,
-            CalculateThanksgiving, CalculateThanksgiving);
-        AddFederalHolidayIfSupported(holidays, year, HolidayNames.ChristmasDay, FederalChristmasDayStartYear,
-            CalculateChristmasDay, CalculateObservedChristmasDay);
-
-        return holidays;
+        return FederalHolidayDefinitions
+            .Where(definition => definition.IsSupportedInYear(year))
+            .Select(definition => definition.Create(year))
+            .ToArray();
     }
 
     /// <summary>
@@ -364,11 +211,8 @@ public static class HolidayCalculator
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="year"/> is outside the supported Gregorian range.</exception>
     public static IReadOnlyList<Holiday> GetReligiousHolidays(int year)
     {
-        var holidays = SupportedReligiousHolidayNames
-            .Select(name => GetReligiousHoliday(name, year))
-            .ToArray();
-
-        return holidays
+        return ReligiousHolidayDefinitions
+            .Select(definition => definition.Create(year))
             .OrderBy(holiday => holiday.ActualDate)
             .ToArray();
     }
@@ -816,20 +660,14 @@ public static class HolidayCalculator
     private static string NormalizeHolidayName(string name, IReadOnlyDictionary<string, string> aliases)
     {
         var normalizedName = name.Trim();
-
-        if (aliases.TryGetValue(normalizedName, out var canonicalName))
-        {
-            return canonicalName;
-        }
-
-        return normalizedName;
+        return aliases.GetValueOrDefault(normalizedName, normalizedName);
     }
 
     private static bool TryGetHoliday(
         string name,
         int year,
         IReadOnlyDictionary<string, string> aliases,
-        IReadOnlyDictionary<string, Func<int, Holiday>> holidayFactories,
+        IReadOnlyDictionary<string, HolidayDefinition> holidayDefinitions,
         out Holiday? holiday)
     {
         holiday = null;
@@ -843,20 +681,8 @@ public static class HolidayCalculator
 
         var normalizedName = NormalizeHolidayName(name, aliases);
 
-        if (!holidayFactories.TryGetValue(normalizedName, out var holidayFactory))
-        {
-            return false;
-        }
-
-        try
-        {
-            holiday = holidayFactory(year);
-            return true;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            return false;
-        }
+        return holidayDefinitions.TryGetValue(normalizedName, out var definition) &&
+               TryCreateHoliday(definition, year, out holiday);
     }
 
     private static IReadOnlyList<Holiday> GetUpcomingHolidays(
@@ -872,35 +698,19 @@ public static class HolidayCalculator
 
         ValidateHolidayDateMode(dateMode);
 
-        var upcomingHolidays = new List<Holiday>();
         var startDate = fromDate.Date;
         var holidayDateSelector = GetHolidayDateSelector(dateMode);
-        var year = startDate.Year;
-        var boundaryYear = startDate.Year;
+        var yearsToInspect = Math.Min(
+            DateTime.MaxValue.Year - startDate.Year + 1,
+            count + 1);
 
-        while (upcomingHolidays.Count < count)
-        {
-            var thresholdDate = year <= boundaryYear
-                ? startDate
-                : new DateTime(year, 1, 1);
-
-            upcomingHolidays.AddRange(
-                holidayProvider(year)
-                    .Where(holiday => holidayDateSelector(holiday) >= thresholdDate));
-
-            if (dateMode == HolidayDateMode.ObservedDate && year == boundaryYear && year < DateTime.MaxValue.Year)
-            {
-                upcomingHolidays.AddRange(
-                    holidayProvider(year + 1)
-                        .Where(holiday =>
-                            holiday.ObservedDate < holiday.ActualDate &&
-                            holiday.ObservedDate >= startDate));
-            }
-
-            year++;
-        }
-
-        return upcomingHolidays
+        return Enumerable.Range(startDate.Year, yearsToInspect)
+            .SelectMany(year => GetUpcomingHolidayCandidates(
+                holidayProvider,
+                holidayDateSelector,
+                startDate,
+                year,
+                dateMode))
             .OrderBy(holiday => holidayDateSelector(holiday))
             .ThenBy(holiday => holiday.ActualDate)
             .ThenBy(holiday => holiday.Name, StringComparer.Ordinal)
@@ -912,8 +722,8 @@ public static class HolidayCalculator
     {
         return dateMode switch
         {
-            HolidayDateMode.ActualDate => holiday => holiday.ActualDate,
-            HolidayDateMode.ObservedDate => holiday => holiday.ObservedDate,
+            HolidayDateMode.ActualDate => static holiday => holiday.ActualDate,
+            HolidayDateMode.ObservedDate => static holiday => holiday.ObservedDate,
             _ => throw new ArgumentOutOfRangeException(nameof(dateMode), dateMode, "Unsupported holiday date mode.")
         };
     }
@@ -926,23 +736,49 @@ public static class HolidayCalculator
         }
     }
 
-    private static void AddFederalHolidayIfSupported(
-        ICollection<Holiday> holidays,
-        int year,
-        string name,
-        int firstSupportedYear,
-        Func<int, DateTime> actualDateCalculator,
-        Func<int, DateTime> observedDateCalculator)
+    private static bool TryCreateHoliday(HolidayDefinition definition, int year, out Holiday? holiday)
     {
-        if (year < firstSupportedYear)
+        try
         {
-            return;
+            holiday = definition.Create(year);
+            return true;
         }
+        catch (ArgumentOutOfRangeException)
+        {
+            holiday = null;
+            return false;
+        }
+    }
 
-        holidays.Add(new Holiday(
-            name,
-            actualDateCalculator(year),
-            observedDateCalculator(year),
-            HolidayCategory.Federal));
+    private static IEnumerable<Holiday> GetUpcomingHolidayCandidates(
+        Func<int, IReadOnlyList<Holiday>> holidayProvider,
+        Func<Holiday, DateTime> holidayDateSelector,
+        DateTime startDate,
+        int year,
+        HolidayDateMode dateMode)
+    {
+        var thresholdDate = year == startDate.Year
+            ? startDate
+            : new DateTime(year, 1, 1);
+
+        var holidaysInYear = holidayProvider(year)
+            .Where(holiday => holidayDateSelector(holiday) >= thresholdDate);
+
+        return dateMode == HolidayDateMode.ObservedDate &&
+               year == startDate.Year &&
+               year < DateTime.MaxValue.Year
+            ? holidaysInYear.Concat(GetObservedCarryoverHolidays(holidayProvider, startDate, year + 1))
+            : holidaysInYear;
+    }
+
+    private static IEnumerable<Holiday> GetObservedCarryoverHolidays(
+        Func<int, IReadOnlyList<Holiday>> holidayProvider,
+        DateTime startDate,
+        int year)
+    {
+        return holidayProvider(year)
+            .Where(holiday =>
+                holiday.ObservedDate < holiday.ActualDate &&
+                holiday.ObservedDate >= startDate);
     }
 }
