@@ -6,6 +6,12 @@ The format is based on Keep a Changelog, and this project follows Semantic Versi
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-23
+
+- Refactored holiday calculation internals toward a more functional style using immutable holiday definitions and projection-based pipelines.
+- Added targeted regression tests for alias lookup, observed-date carryover, and upcoming holiday ordering.
+- Expanded the sample console app to demonstrate supported-name discovery, alias catalogs, and `TryGet...` lookups.
+
 ## [0.3.0] - 2026-04-23
 
 - Added a dedicated `HolidayAliases` catalog with grouped federal and religious alias collections.

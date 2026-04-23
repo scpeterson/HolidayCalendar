@@ -32,7 +32,7 @@ dotnet pack HolidayCalendar.Core/HolidayCalendar.Core.csproj --configuration Rel
 The package will be created at:
 
 ```text
-HolidayCalendar.Core/bin/Release/HolidayCalendar.0.3.0.nupkg
+HolidayCalendar.Core/bin/Release/HolidayCalendar.0.4.0.nupkg
 ```
 
 ### Reference the project directly
@@ -280,7 +280,7 @@ GitHub Actions also runs restore, build, and tests on pushes and pull requests t
 ## Releases
 
 - CI validates restore, build, test, and package creation on `main`
-- The release workflow builds a versioned package for tags like `v0.3.0`
+- The release workflow builds a versioned package for tags like `v0.4.0`
 - Release notes are tracked in [CHANGELOG.md](CHANGELOG.md)
 
 ### Tagging a release
@@ -288,8 +288,8 @@ GitHub Actions also runs restore, build, and tests on pushes and pull requests t
 Create and push a semantic-version tag:
 
 ```bash
-git tag v0.3.0
-git push origin v0.3.0
+git tag v0.4.0
+git push origin v0.4.0
 ```
 
 That tag triggers the release workflow, which:
