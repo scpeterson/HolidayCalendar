@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using HolidayCalendar.Core;
 using static HolidayCalendar.Core.HolidayCalculator;
 
 namespace HolidayCalendar.Core.Tests;
@@ -171,17 +172,17 @@ public sealed class FederalHolidayCalculatorShould
     }
 
     [Theory]
-    [InlineData("New Year's Day", 1869)]
-    [InlineData("Martin Luther King Jr. Day", 1985)]
-    [InlineData("Presidents Day", 1884)]
-    [InlineData("Juneteenth", 2020)]
-    [InlineData("Memorial Day", 1867)]
-    [InlineData("Independence Day", 1869)]
-    [InlineData("Labor Day", 1893)]
-    [InlineData("Columbus Day", 1933)]
-    [InlineData("Veterans Day", 1937)]
-    [InlineData("Thanksgiving", 1941)]
-    [InlineData("Christmas Day", 1869)]
+    [InlineData(HolidayNames.NewYearsDay, 1869)]
+    [InlineData(HolidayNames.MartinLutherKingJrDay, 1985)]
+    [InlineData(HolidayNames.PresidentsDay, 1884)]
+    [InlineData(HolidayNames.Juneteenth, 2020)]
+    [InlineData(HolidayNames.MemorialDay, 1867)]
+    [InlineData(HolidayNames.IndependenceDay, 1869)]
+    [InlineData(HolidayNames.LaborDay, 1893)]
+    [InlineData(HolidayNames.ColumbusDay, 1933)]
+    [InlineData(HolidayNames.VeteransDay, 1937)]
+    [InlineData(HolidayNames.Thanksgiving, 1941)]
+    [InlineData(HolidayNames.ChristmasDay, 1869)]
     public void RejectYearsBeforeFederalHolidayAvailability(string holidayName, int year)
     {
         var action = () => GetFederalHoliday(holidayName, year);
@@ -193,17 +194,17 @@ public sealed class FederalHolidayCalculatorShould
     }
 
     [Theory]
-    [InlineData("New Year's Day", 1870, 1, 1)]
-    [InlineData("Martin Luther King Jr. Day", 1986, 1, 20)]
-    [InlineData("Presidents Day", 1885, 2, 22)]
-    [InlineData("Juneteenth", 2021, 6, 19)]
-    [InlineData("Memorial Day", 1868, 5, 30)]
-    [InlineData("Independence Day", 1870, 7, 4)]
-    [InlineData("Labor Day", 1894, 9, 3)]
-    [InlineData("Columbus Day", 1934, 10, 12)]
-    [InlineData("Veterans Day", 1938, 11, 11)]
-    [InlineData("Thanksgiving", 1942, 11, 26)]
-    [InlineData("Christmas Day", 1870, 12, 25)]
+    [InlineData(HolidayNames.NewYearsDay, 1870, 1, 1)]
+    [InlineData(HolidayNames.MartinLutherKingJrDay, 1986, 1, 20)]
+    [InlineData(HolidayNames.PresidentsDay, 1885, 2, 22)]
+    [InlineData(HolidayNames.Juneteenth, 2021, 6, 19)]
+    [InlineData(HolidayNames.MemorialDay, 1868, 5, 30)]
+    [InlineData(HolidayNames.IndependenceDay, 1870, 7, 4)]
+    [InlineData(HolidayNames.LaborDay, 1894, 9, 3)]
+    [InlineData(HolidayNames.ColumbusDay, 1934, 10, 12)]
+    [InlineData(HolidayNames.VeteransDay, 1938, 11, 11)]
+    [InlineData(HolidayNames.Thanksgiving, 1942, 11, 26)]
+    [InlineData(HolidayNames.ChristmasDay, 1870, 12, 25)]
     public void CalculateFederalHolidaysAtTheirFirstSupportedYear(string holidayName, int year, int month, int day)
     {
         var result = GetFederalHoliday(holidayName, year);

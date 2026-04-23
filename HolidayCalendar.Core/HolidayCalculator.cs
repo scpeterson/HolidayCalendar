@@ -535,7 +535,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateMartinLutherKingJrDay(int year)
     {
-        ValidateFederalHolidayYear(year, FederalMartinLutherKingJrDayStartYear, "Martin Luther King Jr. Day");
+        ValidateFederalHolidayYear(year, FederalMartinLutherKingJrDayStartYear, HolidayNames.MartinLutherKingJrDay);
         return CalculateNthWeekdayOfMonth(year, January, DayOfWeek.Monday, 3);
     }
 
@@ -544,7 +544,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateNewYearsDay(int year)
     {
-        ValidateFederalHolidayYear(year, FederalNewYearsDayStartYear, "New Year's Day");
+        ValidateFederalHolidayYear(year, FederalNewYearsDayStartYear, HolidayNames.NewYearsDay);
         return CalculateFixedHoliday(year, January, 1);
     }
 
@@ -561,7 +561,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculatePresidentsDay(int year)
     {
-        ValidateFederalHolidayYear(year, FederalPresidentsDayStartYear, "Presidents Day");
+        ValidateFederalHolidayYear(year, FederalPresidentsDayStartYear, HolidayNames.PresidentsDay);
 
         if (year < HistoricalPresidentsDayMondayObservanceStartYear)
         {
@@ -576,7 +576,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateJuneteenth(int year)
     {
-        ValidateFederalHolidayYear(year, FederalJuneteenthStartYear, "Juneteenth");
+        ValidateFederalHolidayYear(year, FederalJuneteenthStartYear, HolidayNames.Juneteenth);
         return CalculateFixedHoliday(year, June, 19);
     }
 
@@ -593,7 +593,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateMemorialDay(int year)
     {
-        ValidateFederalHolidayYear(year, HistoricalMemorialDayStartYear, "Memorial Day");
+        ValidateFederalHolidayYear(year, HistoricalMemorialDayStartYear, HolidayNames.MemorialDay);
 
         if (year < HistoricalMemorialDayMondayObservanceStartYear)
         {
@@ -608,7 +608,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateIndependenceDay(int year)
     {
-        ValidateFederalHolidayYear(year, FederalIndependenceDayStartYear, "Independence Day");
+        ValidateFederalHolidayYear(year, FederalIndependenceDayStartYear, HolidayNames.IndependenceDay);
         return CalculateFixedHoliday(year, July, 4);
     }
 
@@ -625,7 +625,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateLaborDay(int year)
     {
-        ValidateFederalHolidayYear(year, FederalLaborDayStartYear, "Labor Day");
+        ValidateFederalHolidayYear(year, FederalLaborDayStartYear, HolidayNames.LaborDay);
         return CalculateNthWeekdayOfMonth(year, September, DayOfWeek.Monday, 1);
     }
 
@@ -634,7 +634,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateColumbusDay(int year)
     {
-        ValidateFederalHolidayYear(year, FederalColumbusDayStartYear, "Columbus Day");
+        ValidateFederalHolidayYear(year, FederalColumbusDayStartYear, HolidayNames.ColumbusDay);
 
         if (year < HistoricalColumbusDayMondayObservanceStartYear)
         {
@@ -649,7 +649,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateVeteransDay(int year)
     {
-        ValidateFederalHolidayYear(year, FederalVeteransDayStartYear, "Veterans Day");
+        ValidateFederalHolidayYear(year, FederalVeteransDayStartYear, HolidayNames.VeteransDay);
 
         if (year >= FederalVeteransDayMondayObservanceStartYear && year <= FederalVeteransDayMondayObservanceEndYear)
         {
@@ -672,7 +672,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateThanksgiving(int year)
     {
-        ValidateFederalHolidayYear(year, FederalThanksgivingStartYear, "Thanksgiving");
+        ValidateFederalHolidayYear(year, FederalThanksgivingStartYear, HolidayNames.Thanksgiving);
         return CalculateNthWeekdayOfMonth(year, November, DayOfWeek.Thursday, 4);
     }
 
@@ -681,7 +681,7 @@ public static class HolidayCalculator
     /// </summary>
     public static DateTime CalculateChristmasDay(int year)
     {
-        ValidateFederalHolidayYear(year, FederalChristmasDayStartYear, "Christmas Day");
+        ValidateFederalHolidayYear(year, FederalChristmasDayStartYear, HolidayNames.ChristmasDay);
         return CalculateFixedHoliday(year, December, 25);
     }
 
