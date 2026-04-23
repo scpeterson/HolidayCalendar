@@ -30,14 +30,7 @@ public sealed class FederalHolidayCollectionShould
     {
         var aliases = GetFederalHolidayAliases();
 
-        aliases.Should().Contain([
-            new KeyValuePair<string, string>("New Years Day", HolidayNames.NewYearsDay),
-            new KeyValuePair<string, string>("MLK Day", HolidayNames.MartinLutherKingJrDay),
-            new KeyValuePair<string, string>("Washington's Birthday", HolidayNames.PresidentsDay),
-            new KeyValuePair<string, string>("Fourth of July", HolidayNames.IndependenceDay),
-            new KeyValuePair<string, string>("Xmas", HolidayNames.ChristmasDay),
-            new KeyValuePair<string, string>("Christmas", HolidayNames.ChristmasDay)
-        ]);
+        aliases.Should().Equal(HolidayAliases.Federal);
     }
 
     [Fact]

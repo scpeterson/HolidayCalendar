@@ -35,15 +35,7 @@ public sealed class ReligiousHolidayCollectionShould
     {
         var aliases = GetReligiousHolidayAliases();
 
-        aliases.Should().Contain([
-            new KeyValuePair<string, string>("Easter", HolidayNames.EasterSunday),
-            new KeyValuePair<string, string>("Holy Thursday", HolidayNames.MaundyThursday),
-            new KeyValuePair<string, string>("Ascension Thursday", HolidayNames.AscensionDay),
-            new KeyValuePair<string, string>("Pentecost", HolidayNames.PentecostSunday),
-            new KeyValuePair<string, string>("All Hallows' Day", HolidayNames.AllSaintsDay),
-            new KeyValuePair<string, string>("Christmas", HolidayNames.ChristmasDay),
-            new KeyValuePair<string, string>("Xmas Eve", HolidayNames.ChristmasEve)
-        ]);
+        aliases.Should().Equal(HolidayAliases.Religious);
     }
 
     [Fact]

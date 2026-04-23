@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using static HolidayCalendar.Core.Constants;
+﻿using static HolidayCalendar.Core.Constants;
 
 namespace HolidayCalendar.Core;
 
@@ -42,35 +41,6 @@ public static class HolidayCalculator
         HolidayNames.ChristmasEve,
         HolidayNames.ChristmasDay
     ];
-
-    private static readonly Dictionary<string, string> FederalHolidayAliases =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["New Years Day"] = HolidayNames.NewYearsDay,
-            ["MLK Day"] = HolidayNames.MartinLutherKingJrDay,
-            ["Washington's Birthday"] = HolidayNames.PresidentsDay,
-            ["Fourth of July"] = HolidayNames.IndependenceDay,
-            ["Xmas"] = HolidayNames.ChristmasDay,
-            ["Christmas"] = HolidayNames.ChristmasDay
-        };
-
-    private static readonly Dictionary<string, string> ReligiousHolidayAliases =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["Easter"] = HolidayNames.EasterSunday,
-            ["Holy Thursday"] = HolidayNames.MaundyThursday,
-            ["Ascension Thursday"] = HolidayNames.AscensionDay,
-            ["Pentecost"] = HolidayNames.PentecostSunday,
-            ["All Hallows' Day"] = HolidayNames.AllSaintsDay,
-            ["Christmas"] = HolidayNames.ChristmasDay,
-            ["Xmas Eve"] = HolidayNames.ChristmasEve
-        };
-
-    private static readonly IReadOnlyDictionary<string, string> ReadOnlyFederalHolidayAliases =
-        new ReadOnlyDictionary<string, string>(FederalHolidayAliases);
-
-    private static readonly IReadOnlyDictionary<string, string> ReadOnlyReligiousHolidayAliases =
-        new ReadOnlyDictionary<string, string>(ReligiousHolidayAliases);
 
     private static readonly IReadOnlyDictionary<string, Func<int, Holiday>> FederalHolidayFactories =
         new Dictionary<string, Func<int, Holiday>>(StringComparer.OrdinalIgnoreCase)
@@ -228,7 +198,7 @@ public static class HolidayCalculator
     public static Holiday GetFederalHoliday(string name, int year)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        var normalizedName = NormalizeHolidayName(name, FederalHolidayAliases);
+        var normalizedName = NormalizeHolidayName(name, HolidayAliases.Federal);
 
         if (FederalHolidayFactories.TryGetValue(normalizedName, out var holidayFactory))
         {
@@ -251,7 +221,7 @@ public static class HolidayCalculator
     public static Holiday GetReligiousHoliday(string name, int year)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        var normalizedName = NormalizeHolidayName(name, ReligiousHolidayAliases);
+        var normalizedName = NormalizeHolidayName(name, HolidayAliases.Religious);
 
         if (ReligiousHolidayFactories.TryGetValue(normalizedName, out var holidayFactory))
         {
@@ -272,7 +242,7 @@ public static class HolidayCalculator
     /// <returns><see langword="true"/> when a supported holiday can be resolved for the supplied year; otherwise <see langword="false"/>.</returns>
     public static bool TryGetFederalHoliday(string name, int year, out Holiday? holiday)
     {
-        return TryGetHoliday(name, year, FederalHolidayAliases, FederalHolidayFactories, out holiday);
+        return TryGetHoliday(name, year, HolidayAliases.Federal, FederalHolidayFactories, out holiday);
     }
 
     /// <summary>
@@ -284,7 +254,7 @@ public static class HolidayCalculator
     /// <returns><see langword="true"/> when a supported holiday can be resolved for the supplied year; otherwise <see langword="false"/>.</returns>
     public static bool TryGetReligiousHoliday(string name, int year, out Holiday? holiday)
     {
-        return TryGetHoliday(name, year, ReligiousHolidayAliases, ReligiousHolidayFactories, out holiday);
+        return TryGetHoliday(name, year, HolidayAliases.Religious, ReligiousHolidayFactories, out holiday);
     }
 
     /// <summary>
@@ -311,7 +281,7 @@ public static class HolidayCalculator
     /// <returns>A read-only alias map keyed by accepted alias name.</returns>
     public static IReadOnlyDictionary<string, string> GetFederalHolidayAliases()
     {
-        return ReadOnlyFederalHolidayAliases;
+        return HolidayAliases.Federal;
     }
 
     /// <summary>
@@ -320,7 +290,7 @@ public static class HolidayCalculator
     /// <returns>A read-only alias map keyed by accepted alias name.</returns>
     public static IReadOnlyDictionary<string, string> GetReligiousHolidayAliases()
     {
-        return ReadOnlyReligiousHolidayAliases;
+        return HolidayAliases.Religious;
     }
 
     /// <summary>
